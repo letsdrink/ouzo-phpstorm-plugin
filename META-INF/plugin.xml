@@ -1,0 +1,22 @@
+<idea-plugin version="2">
+    <id>com.github.letsdrink.intellijplugin</id>
+    <name>Ouzo framework plugin</name>
+    <version>1.0</version>
+    <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+
+    <description>ouzo framework plugin</description>
+
+    <change-notes>
+    </change-notes>
+
+    <!-- please see http://confluence.jetbrains.net/display/IDEADEV/Build+Number+Ranges for description -->
+    <idea-version since-build="107.105"/>
+
+
+    <extensions defaultExtensionNs="com.intellij">
+        <psi.referenceContributor implementation="com.github.letsdrink.intellijplugin.ControllerPsiReferenceContributor"/>
+    </extensions>
+
+    <depends>com.jetbrains.php</depends>
+    <depends>com.intellij.modules.platform</depends>
+</idea-plugin>
