@@ -16,5 +16,4 @@ public class ControllerPsiReferenceContributor extends PsiReferenceContributor {
         PsiElementPattern.Capture<PsiElement> pattern = PlatformPatterns.psiElement().withText(StandardPatterns.string().contains("#"));
         psiReferenceRegistrar.registerReferenceProvider(pattern, new ControllerActionReferenceProvider());
     }
-
 }

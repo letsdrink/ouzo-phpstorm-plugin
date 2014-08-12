@@ -6,7 +6,6 @@ import com.intellij.psi.PsiReference;
 import com.intellij.psi.PsiReferenceProvider;
 import com.intellij.util.ProcessingContext;
 
-
 class ControllerActionReferenceProvider extends PsiReferenceProvider {
     private static final Logger log = Logger.getInstance(ControllerActionReferenceProvider.class);
 
@@ -14,5 +13,4 @@ class ControllerActionReferenceProvider extends PsiReferenceProvider {
     public PsiReference[] getReferencesByElement(PsiElement psiElement, ProcessingContext processingContext) {
         return new PsiReference[]{new ControllerActionReference(psiElement)};
     }
-
 }

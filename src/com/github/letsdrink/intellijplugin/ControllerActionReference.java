@@ -18,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 
 public class ControllerActionReference extends PsiReferenceBase<PsiElement> {
-
     private String controller;
     private String action;
     private PsiElement psiElement;
@@ -26,17 +25,15 @@ public class ControllerActionReference extends PsiReferenceBase<PsiElement> {
     public ControllerActionReference(PsiElement psiElement) {
         super(psiElement);
         this.psiElement = psiElement;
-        String contents = ((StringLiteralExpression)psiElement).getContents();
+        String contents = ((StringLiteralExpression) psiElement).getContents();
         String[] strings = contents.split("#");
         controller = "Controller\\" + StringUtils.capitalize(strings[0]) + "Controller";
         action = strings[1];
     }
 
-
     @Nullable
     @Override
     public Method resolve() {
-
         PhpIndex phpIndex = PhpIndex.getInstance(psiElement.getProject());
         Collection<PhpClass> phpClasses = phpIndex.getClassesByFQN(controller);
 
@@ -74,7 +71,6 @@ public class ControllerActionReference extends PsiReferenceBase<PsiElement> {
             presentation.setTypeText(controllerAction.getFQN());
             presentation.setTypeGrayed(true);
         }
-
     }
 
     @NotNull
