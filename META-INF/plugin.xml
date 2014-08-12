@@ -15,6 +15,7 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <psi.referenceContributor implementation="com.github.letsdrink.intellijplugin.ControllerPsiReferenceContributor"/>
+        <psi.referenceContributor implementation="com.github.letsdrink.intellijplugin.ModelFieldReferenceContributor"/>
     </extensions>
 
     <depends>com.jetbrains.php</depends>
