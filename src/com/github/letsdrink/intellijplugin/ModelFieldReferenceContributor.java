@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class ModelFieldReferenceContributor extends PsiReferenceContributor {
     @Override
-    public void registerReferenceProviders(PsiReferenceRegistrar psiReferenceRegistrar) {
+    public void registerReferenceProviders(@NotNull PsiReferenceRegistrar psiReferenceRegistrar) {
         ObjectPattern.Capture<PsiElement> pattern = PlatformPatterns.instanceOf(PsiElement.class);
         psiReferenceRegistrar.registerReferenceProvider(pattern, new PsiReferenceProvider() {
             @NotNull

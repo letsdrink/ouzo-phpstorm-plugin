@@ -12,6 +12,7 @@ import com.jetbrains.php.lang.psi.elements.Method;
 import com.jetbrains.php.lang.psi.elements.PhpClass;
 import com.jetbrains.php.lang.psi.elements.StringLiteralExpression;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.WordUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,8 +28,18 @@ public class ControllerActionReference extends PsiReferenceBase<PsiElement> {
         this.psiElement = psiElement;
         String contents = ((StringLiteralExpression) psiElement).getContents();
         String[] strings = contents.split("#");
-        controller = "Controller\\" + StringUtils.capitalize(strings[0]) + "Controller";
+        String controllerName = underscoreToCamelCase(strings[0]);
+        controllerName = prepareNamespace(controllerName);
+        controller = "Controller\\" + controllerName + "Controller";
         action = strings[1];
+    }
+
+    private String underscoreToCamelCase(String text) {
+        return StringUtils.capitalize(WordUtils.capitalizeFully(text, new char[]{'_'}).replaceAll("_", ""));
+    }
+
+    private String prepareNamespace(String s) {
+        return s.replace('/', '\\');
     }
 
     @Nullable
