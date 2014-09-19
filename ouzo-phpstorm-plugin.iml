@@ -9,6 +9,8 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" scope="PROVIDED" name="php-openapi" level="project" />
+    <orderEntry type="library" name="php" level="project" />
+    <orderEntry type="library" name="javascript-openapi" level="project" />
   </component>
 </module>
 

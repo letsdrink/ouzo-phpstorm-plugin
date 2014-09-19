@@ -20,4 +20,11 @@
 
     <depends>com.jetbrains.php</depends>
     <depends>com.intellij.modules.platform</depends>
+
+    <actions>
+        <action id="ExtractTranslationAction" class="com.github.letsdrink.intellijplugin.ExtractTranslationAction"
+                text="Extract translation" description="Extract translation">
+            <add-to-group group-id="RefactoringMenu" anchor="last"/>
+        </action>
+    </actions>
 </idea-plugin>
