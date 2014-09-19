@@ -10,6 +10,7 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
+import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
@@ -17,6 +18,8 @@ import com.intellij.psi.search.FilenameIndex;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.xml.XmlTokenType;
+import com.jetbrains.php.lang.parser.PhpElementTypes;
+import com.jetbrains.php.lang.psi.elements.StringLiteralExpression;
 
 public class ExtractTranslationAction extends AnAction {
     public ExtractTranslationAction() {
@@ -35,17 +38,15 @@ public class ExtractTranslationAction extends AnAction {
         if (psiElement == null || psiElement.getNode() == null)
             return;
 
-        IElementType elementType = psiElement.getNode().getElementType();
-        if (!isTypeSupported(elementType)) {
+        if (!isTypeSupported(psiElement)) {
             return;
         }
-        if (isTypeSupported(psiElement.getParent().getNode().getElementType())) {
+        if (isTypeSupported(psiElement.getParent())) {
             psiElement = psiElement.getParent();
         }
         final PsiElement finalPsiElement = psiElement;
 
-
-        TranslationDialog dialog = new TranslationDialog("test", new TranslationDialog.OkCallback() {
+        TranslationDialog dialog = new TranslationDialog(getText(finalPsiElement), new TranslationDialog.OkCallback() {
             @Override
             public void onClick(final String key, final String plText, final String enText) {
                 replaceTextWithTranslation(key, finalPsiElement, editor);
@@ -55,9 +56,16 @@ public class ExtractTranslationAction extends AnAction {
         });
         dialog.pack();
         dialog.setTitle("Input translation key");
-        dialog.setSize(300,200);
+        dialog.setSize(300, 200);
         dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);
+    }
+
+    private String getText(PsiElement psiElement) {
+        if (psiElement.getParent() instanceof StringLiteralExpression) {
+            return ((StringLiteralExpression) psiElement.getParent()).getContents();
+        }
+        return psiElement.getText();
     }
 
     private void addTranslation(String key, String enText, String langFile, final Project project) {
@@ -88,10 +96,13 @@ public class ExtractTranslationAction extends AnAction {
         new WriteCommandAction(finalPsiElement.getProject()) {
             @Override
             protected void run(Result result) throws Throwable {
-                String insertString = "<?= t('" + key + "')?>";
+                String insertString = "t('" + key + "')";
 
+                if (!isParentPhpString(finalPsiElement)) {
+                    insertString = "<?=" + insertString + "?>";
+                }
                 if (isJsLiteral(finalPsiElement.getNode().getElementType())) {
-                    insertString = "\"" + insertString + "\"";
+                    insertString = "'" + insertString + "'";
                 }
                 editor.getDocument().replaceString(range.getStartOffset(), range.getEndOffset(), insertString);
                 editor.getCaretModel().moveToOffset(range.getStartOffset());
@@ -115,8 +126,18 @@ public class ExtractTranslationAction extends AnAction {
     }
 
 
-    private boolean isTypeSupported(IElementType elementType) {
-        return elementType == XmlTokenType.XML_DATA_CHARACTERS || elementType == XmlTokenType.XML_ATTRIBUTE_VALUE_TOKEN || elementType.toString().equals("XML_TEXT") || isJsLiteral(elementType);
+    private boolean isTypeSupported(PsiElement psiElement) {
+        IElementType elementType = psiElement.getNode().getElementType();
+        return isXmlText(elementType) || elementType.toString().equals("XML_TEXT") || isJsLiteral(elementType) || isParentPhpString(psiElement);
+
+    }
+
+    private boolean isParentPhpString(PsiElement psiElement) {
+        return PlatformPatterns.psiElement(PhpElementTypes.STRING).accepts(psiElement.getParent());
+    }
+
+    private boolean isXmlText(IElementType elementType) {
+        return elementType == XmlTokenType.XML_DATA_CHARACTERS || elementType == XmlTokenType.XML_ATTRIBUTE_VALUE_TOKEN;
     }
 
     private boolean isJsLiteral(IElementType elementType) {
