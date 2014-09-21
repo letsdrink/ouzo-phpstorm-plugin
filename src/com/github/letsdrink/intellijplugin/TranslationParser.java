@@ -2,12 +2,9 @@ package com.github.letsdrink.intellijplugin;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
-import com.intellij.openapi.project.Project;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.search.FilenameIndex;
-import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.jetbrains.php.lang.parser.PhpElementTypes;
@@ -16,7 +13,8 @@ import com.jetbrains.php.lang.psi.elements.PhpPsiElement;
 import com.jetbrains.php.lang.psi.elements.StringLiteralExpression;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedList;
 
 public class TranslationParser {
     private final PsiFile psiFile;
