@@ -46,7 +46,12 @@ public class ExtractTranslationAction extends AnAction {
         }
         final PsiElement finalPsiElement = psiElement;
 
-        TranslationDialog dialog = new TranslationDialog(getText(finalPsiElement), new TranslationDialog.OkCallback() {
+        String text = getText(finalPsiElement);
+
+        TranslationParser translationParser = new TranslationParser(finalPsiElement.getProject());
+        String key = translationParser.getKey(text);
+
+        TranslationDialog dialog = new TranslationDialog(key, text, new TranslationDialog.OkCallback() {
             @Override
             public void onClick(final String key, final String plText, final String enText) {
                 replaceTextWithTranslation(key, finalPsiElement, editor);

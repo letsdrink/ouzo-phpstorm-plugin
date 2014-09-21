@@ -4,7 +4,6 @@ import javax.swing.*;
 import java.awt.event.*;
 
 public class TranslationDialog extends JDialog {
-
     private final OkCallback okCallback;
 
     public interface OkCallback {
@@ -18,12 +17,13 @@ public class TranslationDialog extends JDialog {
     private JTextField plText;
     private JTextField enText;
 
-    public TranslationDialog(String text, OkCallback okCallback) {
+    public TranslationDialog(String keyText, String text, OkCallback okCallback) {
         this.okCallback = okCallback;
         setContentPane(contentPane);
         setModal(true);
         plText.setText(text);
         enText.setText(text);
+        key.setText(keyText);
         getRootPane().setDefaultButton(buttonOK);
 
         buttonOK.addActionListener(new ActionListener() {
@@ -65,7 +65,7 @@ public class TranslationDialog extends JDialog {
     }
 
     public static void main(String[] args) {
-        TranslationDialog dialog = new TranslationDialog("test", new OkCallback() {
+        TranslationDialog dialog = new TranslationDialog("test", "test", new OkCallback() {
             @Override
             public void onClick(final String key, final String plText, final String enText) {
             }
