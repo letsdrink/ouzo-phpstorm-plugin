@@ -17,14 +17,13 @@ import com.jetbrains.php.lang.psi.elements.StringLiteralExpression;
 import java.util.*;
 
 public class TranslationParser {
-    private final Project project;
+    private final PsiFile psiFile;
 
-    public TranslationParser(Project project) {
-        this.project = project;
+    public TranslationParser(PsiFile psiFile) {
+        this.psiFile = psiFile;
     }
 
     public String getKey(String translation) {
-        PsiFile psiFile = getPsiFile("en.php", project);
         Collection<ArrayHashElement> hashElements = PsiTreeUtil.collectElementsOfType(psiFile, ArrayHashElement.class);
         for (ArrayHashElement hashElement : hashElements) {
             PhpPsiElement value = hashElement.getValue();
@@ -56,15 +55,5 @@ public class TranslationParser {
 
     private boolean is(PsiElement element, IElementType type) {
         return PlatformPatterns.psiElement(type).accepts(element);
-    }
-
-    private PsiFile getPsiFile(String langFile, Project project) {
-        PsiFile[] files = FilenameIndex.getFilesByName(project, langFile, GlobalSearchScope.allScope(project));
-        for (PsiFile file : files) {
-            if (!file.getVirtualFile().getCanonicalPath().contains("vendor")) {
-                return file;
-            }
-        }
-        return null;
     }
 }

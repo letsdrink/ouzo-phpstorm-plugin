@@ -48,15 +48,23 @@ public class ExtractTranslationAction extends AnAction {
 
         String text = getText(finalPsiElement);
 
-        TranslationParser translationParser = new TranslationParser(finalPsiElement.getProject());
-        String key = translationParser.getKey(text);
+        final PsiFile enFile = getPsiFile("en.php", finalPsiElement.getProject());
+        final PsiFile plFile = getPsiFile("pl.php", finalPsiElement.getProject());
+
+        TranslationParser enTranslationParser = new TranslationParser(enFile);
+        TranslationParser plTranslationParser = new TranslationParser(plFile);
+
+        String key = enTranslationParser.getKey(text);
+        if (key == null || "".equals(key)) {
+            key = plTranslationParser.getKey(text);
+        }
 
         TranslationDialog dialog = new TranslationDialog(key, text, new TranslationDialog.OkCallback() {
             @Override
             public void onClick(final String key, final String plText, final String enText) {
                 replaceTextWithTranslation(key, finalPsiElement, editor);
-                addTranslation(key, enText, "en.php", finalPsiElement.getProject());
-                addTranslation(key, plText, "pl.php", finalPsiElement.getProject());
+                addTranslation(key, enText, finalPsiElement.getProject(), enFile);
+                addTranslation(key, plText, finalPsiElement.getProject(), plFile);
             }
         });
         dialog.pack();
@@ -73,8 +81,7 @@ public class ExtractTranslationAction extends AnAction {
         return psiElement.getText();
     }
 
-    private void addTranslation(String key, String enText, String langFile, final Project project) {
-        PsiFile enFile = getPsiFile(langFile, project);
+    private void addTranslation(String key, String enText, final Project project, PsiFile enFile) {
 
         final PsiDocumentManager manager = PsiDocumentManager.getInstance(project);
         final Document document = manager.getDocument(enFile);
