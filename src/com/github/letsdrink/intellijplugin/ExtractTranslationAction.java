@@ -64,12 +64,7 @@ public class ExtractTranslationAction extends AnAction {
 
         String key = FluentIterable.from(translationParsers).transform(TranslationParser.getKeyFunction(text)).filter(Predicates.notNull()).first().or("");
 
-        final Map<String, String> translations = new HashMap<String, String>();
-        for (TranslationParser translationParser : translationParsers) {
-            String translation = translationParser.getTranslation(key);
-            translation = translation == null ? "" : translation;
-            translations.put(translationParser.getLanguage(), translation);
-        }
+        final Map<String, String> translations = createTranslationsMap(translationParsers, key);
 
         TranslationDialog dialog = new TranslationDialog(key, translations, new TranslationDialog.OkCallback() {
             @Override
@@ -86,6 +81,16 @@ public class ExtractTranslationAction extends AnAction {
         dialog.setSize(300, 200);
         dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);
+    }
+
+    private Map<String, String> createTranslationsMap(List<TranslationParser> translationParsers, String key) {
+        final Map<String, String> translations = new HashMap<String, String>();
+        for (TranslationParser translationParser : translationParsers) {
+            String translation = translationParser.getTranslation(key);
+            translation = translation == null ? "" : translation;
+            translations.put(translationParser.getLanguage(), translation);
+        }
+        return translations;
     }
 
     private List<PsiFile> getTranslationFiles(Project project) {
