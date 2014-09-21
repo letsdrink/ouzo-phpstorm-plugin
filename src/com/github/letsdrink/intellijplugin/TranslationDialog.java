@@ -1,33 +1,46 @@
 package com.github.letsdrink.intellijplugin;
 
+import com.google.common.collect.ImmutableMap;
+
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
+import java.util.Map;
 
 public class TranslationDialog extends JDialog {
     private final OkCallback okCallback;
 
     public interface OkCallback {
-        void onClick(String key, String plText, String enText);
+        void onClick(String key);
     }
 
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
     private JTextField key;
-    private JTextField plText;
-    private JTextField enText;
+    private JTable translations;
 
-    public TranslationDialog(String keyText, String plText, String enText, OkCallback okCallback) {
+    public TranslationDialog(String keyText, Map<String, String> translationsMap, OkCallback okCallback) {
         this.okCallback = okCallback;
         setContentPane(contentPane);
         setModal(true);
-        this.plText.setText(plText);
-        this.enText.setText(enText);
+
+        this.translations.setModel(new TranslationsTableModel(translationsMap));
+
+        JTextField textField = new JTextField();
+        textField.setMargin(new Insets(0, 0 ,0, 0));
+        DefaultCellEditor singleClick = new DefaultCellEditor(textField);
+        singleClick.setClickCountToStart(1);
+
+        this.translations.setDefaultEditor(this.translations.getColumnClass(1), singleClick);
+        this.translations.setRowHeight(30);
+
         key.setText(keyText);
         getRootPane().setDefaultButton(buttonOK);
 
         buttonOK.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                translations.getCellEditor().stopCellEditing();
                 onOK();
             }
         });
@@ -55,7 +68,7 @@ public class TranslationDialog extends JDialog {
     }
 
     private void onOK() {
-        okCallback.onClick(key.getText(), plText.getText(), enText.getText());
+        okCallback.onClick(key.getText());
         dispose();
     }
 
@@ -65,9 +78,9 @@ public class TranslationDialog extends JDialog {
     }
 
     public static void main(String[] args) {
-        TranslationDialog dialog = new TranslationDialog("test", "test", "test", new OkCallback() {
+        TranslationDialog dialog = new TranslationDialog("test", ImmutableMap.of("en", "asd"), new OkCallback() {
             @Override
-            public void onClick(final String key, final String plText, final String enText) {
+            public void onClick(final String key) {
             }
         });
         dialog.pack();
