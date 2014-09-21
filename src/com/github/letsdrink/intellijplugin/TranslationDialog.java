@@ -17,12 +17,12 @@ public class TranslationDialog extends JDialog {
     private JTextField plText;
     private JTextField enText;
 
-    public TranslationDialog(String keyText, String text, OkCallback okCallback) {
+    public TranslationDialog(String keyText, String plText, String enText, OkCallback okCallback) {
         this.okCallback = okCallback;
         setContentPane(contentPane);
         setModal(true);
-        plText.setText(text);
-        enText.setText(text);
+        this.plText.setText(plText);
+        this.enText.setText(enText);
         key.setText(keyText);
         getRootPane().setDefaultButton(buttonOK);
 
@@ -65,7 +65,7 @@ public class TranslationDialog extends JDialog {
     }
 
     public static void main(String[] args) {
-        TranslationDialog dialog = new TranslationDialog("test", "test", new OkCallback() {
+        TranslationDialog dialog = new TranslationDialog("test", "test", "test", new OkCallback() {
             @Override
             public void onClick(final String key, final String plText, final String enText) {
             }

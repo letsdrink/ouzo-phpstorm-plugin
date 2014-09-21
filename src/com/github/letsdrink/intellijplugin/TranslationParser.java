@@ -54,7 +54,7 @@ public class TranslationParser {
         };
     }
 
-    public static Function<TranslationParser, String> getTextFunction(final String text) {
+    public static Function<TranslationParser, String> getKeyFunction(final String text) {
         return new Function<TranslationParser, String>() {
             @Nullable
             @Override
@@ -77,6 +77,18 @@ public class TranslationParser {
                     return getKey(hashElement);
                 }
             }
+        }
+        return null;
+    }
+
+    public String getTranslation(String key) {
+        List<String> keys = Splitter.on(".").splitToList(key);
+        List<String> missingKeys = new ArrayList<String>();
+        PsiElement translationArray = findDestinationArrayParent(keys, missingKeys);
+
+        if (missingKeys.isEmpty()) {
+            Optional<PsiElement> elementOptional = Iterables.tryFind(asList(translationArray.getChildren()), hasArrayElementKey(Iterables.getLast(keys)));
+            return  elementOptional.isPresent() ? getContent(((ArrayHashElement) elementOptional.get()).getValue()) : null;
         }
         return null;
     }
@@ -106,14 +118,10 @@ public class TranslationParser {
     - be an array (incomplete key)
      */
     public void addTranslation(String key, String text) {
-        Collection<PhpReturn> phpReturns = PsiTreeUtil.collectElementsOfType(psiFile, PhpReturn.class);
-        PhpReturn phpReturn = Iterables.getOnlyElement(phpReturns);
-        PsiElement translations = phpReturn.getFirstPsiChild();
-
         List<String> keys = Splitter.on(".").splitToList(key);
         List<String> missingKeys = new ArrayList<String>();
 
-        PsiElement translationArray = findDestinationArrayParent(translations, keys, missingKeys);
+        PsiElement translationArray = findDestinationArrayParent(keys, missingKeys);
 
         Optional<PsiElement> elementOptional = Iterables.tryFind(asList(translationArray.getChildren()), hasArrayElementKey(Iterables.getLast(keys)));
         if (elementOptional.isPresent() && missingKeys.isEmpty()) {
@@ -125,7 +133,12 @@ public class TranslationParser {
         }
     }
 
-    private PsiElement findDestinationArrayParent(PsiElement root, List<String> keys, List<String> missingKeys) {
+    private PsiElement findDestinationArrayParent(List<String> keys, List<String> missingKeys) {
+        Collection<PhpReturn> phpReturns = PsiTreeUtil.collectElementsOfType(psiFile, PhpReturn.class);
+        PhpReturn phpReturn = Iterables.getOnlyElement(phpReturns);
+        PsiElement root = phpReturn.getFirstPsiChild();
+
+
         Iterable<String> prefixKeys = Iterables.limit(keys, keys.size() - 1);
         Iterables.addAll(missingKeys, prefixKeys);
         for (final String keyPart : prefixKeys) {

@@ -1,8 +1,10 @@
 package com.github.letsdrink.intellijplugin;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.FluentIterable;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -33,6 +35,9 @@ import static com.google.common.base.Predicates.not;
 import static com.google.common.collect.Iterables.filter;
 
 public class ExtractTranslationAction extends AnAction {
+    private final Predicate<? super TranslationParser> isEn = TranslationParser.languageEqualsFunction("en");
+    private final Predicate<? super TranslationParser> isPl = TranslationParser.languageEqualsFunction("pl");
+
     public ExtractTranslationAction() {
         super("ExtractTranslation");
     }
@@ -64,15 +69,15 @@ public class ExtractTranslationAction extends AnAction {
         List<PsiFile> translationFiles = getTranslationFiles(project);
         final List<TranslationParser> translationParsers = Lists.transform(translationFiles, TranslationParser.createParser());
 
-        String key = FluentIterable.from(translationParsers).transform(TranslationParser.getTextFunction(text)).filter(Predicates.notNull()).first().or("");
+        String key = FluentIterable.from(translationParsers).transform(TranslationParser.getKeyFunction(text)).filter(Predicates.notNull()).first().or("");
 
-        TranslationDialog dialog = new TranslationDialog(key, text, new TranslationDialog.OkCallback() {
+        String plText = getTranslation(key, translationParsers, isPl);
+        String enText = getTranslation(key, translationParsers, isEn);
+
+        TranslationDialog dialog = new TranslationDialog(key, plText, enText, new TranslationDialog.OkCallback() {
             @Override
             public void onClick(final String key, final String plText, final String enText) {
                 replaceTextWithTranslation(key, finalPsiElement, editor);
-
-                Predicate<? super TranslationParser> isEn = TranslationParser.languageEqualsFunction("en");
-                Predicate<? super TranslationParser> isPl = TranslationParser.languageEqualsFunction("pl");
 
                 addTranslations(key, enText, filter(translationParsers, isEn));
                 addTranslations(key, plText, filter(translationParsers, isPl));
@@ -84,6 +89,14 @@ public class ExtractTranslationAction extends AnAction {
         dialog.setSize(300, 200);
         dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);
+    }
+
+    private String getTranslation(String key, List<TranslationParser> translationParsers, Predicate<? super TranslationParser> pl) {
+        Optional<TranslationParser> optional = Iterables.tryFind(translationParsers, pl);
+        if (optional.isPresent()) {
+            return optional.get().getTranslation(key);
+        }
+        return "";
     }
 
     private void addTranslations(String key, String text, Iterable<TranslationParser> filter) {
