@@ -20,8 +20,6 @@ import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
-import com.intellij.psi.search.FilenameIndex;
-import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.xml.XmlTokenType;
 import com.jetbrains.php.lang.parser.PhpElementTypes;
@@ -59,7 +57,7 @@ public class ExtractTranslationAction extends AnAction {
         }
         final PsiElement finalPsiElement = psiElement;
 
-        final String text = getText(finalPsiElement);
+        final String text = getTextToTranslate(finalPsiElement);
 
         final Project project = finalPsiElement.getProject();
 
@@ -103,7 +101,7 @@ public class ExtractTranslationAction extends AnAction {
         return translationFiles;
     }
 
-    private String getText(PsiElement psiElement) {
+    private String getTextToTranslate(PsiElement psiElement) {
         if (psiElement.getParent() instanceof StringLiteralExpression) {
             return ((StringLiteralExpression) psiElement.getParent()).getContents();
         }

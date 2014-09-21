@@ -1,8 +1,7 @@
 package com.github.letsdrink.intellijplugin;
 
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
-import com.google.common.base.Predicate;
+import com.google.common.base.*;
+import com.google.common.collect.Iterables;
 import com.intellij.openapi.application.Result;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
@@ -16,14 +15,20 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.jetbrains.php.lang.parser.PhpElementTypes;
 import com.jetbrains.php.lang.psi.elements.ArrayHashElement;
 import com.jetbrains.php.lang.psi.elements.PhpPsiElement;
-import com.jetbrains.php.lang.psi.elements.StringLiteralExpression;
+import com.jetbrains.php.lang.psi.elements.PhpReturn;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
+
+import static com.github.letsdrink.intellijplugin.PsiUtils.getContent;
+import static java.util.Arrays.asList;
 
 public class TranslationParser {
     private final PsiFile psiFile;
+    private final TranslationCodeBuilder translationCodeBuilder = new TranslationCodeBuilder();
 
     public TranslationParser(PsiFile psiFile) {
         this.psiFile = psiFile;
@@ -76,10 +81,6 @@ public class TranslationParser {
         return null;
     }
 
-    private String getContent(PhpPsiElement value) {
-        return ((StringLiteralExpression) value).getContents();
-    }
-
     private String getKey(ArrayHashElement hashElement) {
         LinkedList<String> keys = new LinkedList<String>();
         keys.add(getContent(hashElement.getKey()));
@@ -97,16 +98,97 @@ public class TranslationParser {
         return PlatformPatterns.psiElement(type).accepts(element);
     }
 
+    /*
+    Translation key can
+    - be missing in existing nested key
+    - already exist or
+    - be missing with missing nested keys
+    - be an array (incomplete key)
+     */
     public void addTranslation(String key, String text) {
+        Collection<PhpReturn> phpReturns = PsiTreeUtil.collectElementsOfType(psiFile, PhpReturn.class);
+        PhpReturn phpReturn = Iterables.getOnlyElement(phpReturns);
+        PsiElement translations = phpReturn.getFirstPsiChild();
+
+        List<String> keys = Splitter.on(".").splitToList(key);
+        List<String> missingKeys = new ArrayList<String>();
+
+        PsiElement translationArray = findDestinationArrayParent(translations, keys, missingKeys);
+
+        Optional<PsiElement> elementOptional = Iterables.tryFind(asList(translationArray.getChildren()), hasArrayElementKey(Iterables.getLast(keys)));
+        if (elementOptional.isPresent() && missingKeys.isEmpty()) {
+            ArrayHashElement hashElement = (ArrayHashElement) elementOptional.get();
+            overwrite(hashElement.getValue(), text);
+        } else {
+            String insertionText = translationCodeBuilder.getInsertionText(text, keys, missingKeys, translationArray.getChildren().length > 0);
+            insert(getInsertionPosition(translationArray), insertionText);
+        }
+    }
+
+    private PsiElement findDestinationArrayParent(PsiElement root, List<String> keys, List<String> missingKeys) {
+        Iterable<String> prefixKeys = Iterables.limit(keys, keys.size() - 1);
+        Iterables.addAll(missingKeys, prefixKeys);
+        for (final String keyPart : prefixKeys) {
+            Optional<PsiElement> elementOptional = Iterables.tryFind(asList(root.getChildren()), hasArrayElementKey(keyPart));
+            if (elementOptional.isPresent()) {
+                ArrayHashElement hashElement = (ArrayHashElement) elementOptional.get();
+                root = hashElement.getValue();
+                missingKeys.remove(0);
+            } else {
+                return root;
+            }
+        }
+        return root;
+    }
+
+    private int getInsertionPosition(PsiElement translations) {
+        if (translations.getChildren().length > 0) {
+            return translations.getFirstChild().getTextRange().getEndOffset() + 1;
+        }
+        return translations.getTextRange().getEndOffset() - 1;
+    }
+
+    private Predicate<PsiElement> hasArrayElementKey(final String keyPart) {
+        return new Predicate<PsiElement>() {
+            @Override
+            public boolean apply(@Nullable PsiElement element) {
+                ArrayHashElement hashElement = (ArrayHashElement) element;
+                PsiElement stringElement = hashElement.getKey();
+                return keyPart.equals(getContent(stringElement));
+            }
+        };
+    }
+
+    public void insert(final int position, final String text) {
         Project project = psiFile.getProject();
         final PsiDocumentManager manager = PsiDocumentManager.getInstance(project);
         final Document document = manager.getDocument(psiFile);
 
-        final String finalInsertString = "\n'" + key + "' => '" + text + "',";
         new WriteCommandAction(project) {
             @Override
             protected void run(Result result) throws Throwable {
-                document.insertString(document.getTextLength(), finalInsertString);
+                document.insertString(position, text);
+                manager.doPostponedOperationsAndUnblockDocument(document);
+                manager.commitDocument(document);
+            }
+
+            @Override
+            public String getGroupID() {
+                return "Translation Extraction";
+            }
+        }.execute();
+    }
+
+    private void overwrite(final PhpPsiElement value, final String text) {
+        Project project = psiFile.getProject();
+        final PsiDocumentManager manager = PsiDocumentManager.getInstance(project);
+        final Document document = manager.getDocument(psiFile);
+
+        new WriteCommandAction(project) {
+            @Override
+            protected void run(Result result) throws Throwable {
+                document.deleteString(value.getTextRange().getStartOffset(), value.getTextRange().getEndOffset());
+                document.insertString(value.getTextRange().getStartOffset(), "'" + text + "'");
                 manager.doPostponedOperationsAndUnblockDocument(document);
                 manager.commitDocument(document);
             }
