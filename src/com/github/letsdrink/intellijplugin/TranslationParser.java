@@ -1,5 +1,6 @@
 package com.github.letsdrink.intellijplugin;
 
+import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.intellij.openapi.project.Project;
 import com.intellij.patterns.PlatformPatterns;
@@ -14,6 +15,7 @@ import com.jetbrains.php.lang.psi.elements.ArrayHashElement;
 import com.jetbrains.php.lang.psi.elements.PhpPsiElement;
 import com.jetbrains.php.lang.psi.elements.StringLiteralExpression;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 public class TranslationParser {
@@ -21,6 +23,26 @@ public class TranslationParser {
 
     public TranslationParser(PsiFile psiFile) {
         this.psiFile = psiFile;
+    }
+
+    public static Function<PsiFile, TranslationParser> createParser() {
+        return new Function<PsiFile, TranslationParser>() {
+            @Nullable
+            @Override
+            public TranslationParser apply(@Nullable PsiFile psiFile) {
+                return  new TranslationParser(psiFile);
+            }
+        };
+    }
+
+    public static Function<TranslationParser, String> getTextFunction(final String text) {
+        return new Function<TranslationParser, String>() {
+            @Nullable
+            @Override
+            public String apply(@Nullable TranslationParser translationParser) {
+                return translationParser.getKey(text);
+            }
+        };
     }
 
     public String getKey(String translation) {

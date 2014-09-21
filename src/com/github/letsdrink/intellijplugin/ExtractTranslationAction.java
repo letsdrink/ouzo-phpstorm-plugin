@@ -1,5 +1,8 @@
 package com.github.letsdrink.intellijplugin;
 
+import com.google.common.base.Predicates;
+import com.google.common.collect.FluentIterable;
+import com.google.common.collect.Lists;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.LangDataKeys;
@@ -10,16 +13,22 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
+import com.intellij.openapi.vfs.VfsUtil;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiManager;
 import com.intellij.psi.search.FilenameIndex;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.xml.XmlTokenType;
 import com.jetbrains.php.lang.parser.PhpElementTypes;
 import com.jetbrains.php.lang.psi.elements.StringLiteralExpression;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ExtractTranslationAction extends AnAction {
     public ExtractTranslationAction() {
@@ -46,25 +55,25 @@ public class ExtractTranslationAction extends AnAction {
         }
         final PsiElement finalPsiElement = psiElement;
 
-        String text = getText(finalPsiElement);
+        final String text = getText(finalPsiElement);
 
-        final PsiFile enFile = getPsiFile("en.php", finalPsiElement.getProject());
-        final PsiFile plFile = getPsiFile("pl.php", finalPsiElement.getProject());
+        final Project project = finalPsiElement.getProject();
 
-        TranslationParser enTranslationParser = new TranslationParser(enFile);
-        TranslationParser plTranslationParser = new TranslationParser(plFile);
 
-        String key = enTranslationParser.getKey(text);
-        if (key == null || "".equals(key)) {
-            key = plTranslationParser.getKey(text);
-        }
+        List<PsiFile> translationFiles = getTranslationFiles(project);
+        List<TranslationParser> translationParsers = Lists.transform(translationFiles, TranslationParser.createParser());
+
+        final PsiFile enFile = getPsiFile("en.php", project);
+        final PsiFile plFile = getPsiFile("pl.php", project);
+
+        String key = FluentIterable.from(translationParsers).transform(TranslationParser.getTextFunction(text)).filter(Predicates.notNull()).first().or("");
 
         TranslationDialog dialog = new TranslationDialog(key, text, new TranslationDialog.OkCallback() {
             @Override
             public void onClick(final String key, final String plText, final String enText) {
                 replaceTextWithTranslation(key, finalPsiElement, editor);
-                addTranslation(key, enText, finalPsiElement.getProject(), enFile);
-                addTranslation(key, plText, finalPsiElement.getProject(), plFile);
+                addTranslation(key, enText, project, enFile);
+                addTranslation(key, plText, project, plFile);
             }
         });
         dialog.pack();
@@ -72,6 +81,15 @@ public class ExtractTranslationAction extends AnAction {
         dialog.setSize(300, 200);
         dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);
+    }
+
+    private List<PsiFile> getTranslationFiles(Project project) {
+        List<PsiFile> translationFiles = new ArrayList<PsiFile>();
+        VirtualFile[] locales = VfsUtil.getChildren(project.getBaseDir().findChild("locales"));
+        for (VirtualFile locale : locales) {
+            translationFiles.add(PsiManager.getInstance(project).findFile(locale));
+        }
+        return translationFiles;
     }
 
     private String getText(PsiElement psiElement) {
