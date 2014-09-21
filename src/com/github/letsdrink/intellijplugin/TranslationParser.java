@@ -2,7 +2,13 @@ package com.github.letsdrink.intellijplugin;
 
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
+import com.google.common.base.Predicate;
+import com.intellij.openapi.application.Result;
+import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.editor.Document;
+import com.intellij.openapi.project.Project;
 import com.intellij.patterns.PlatformPatterns;
+import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.tree.IElementType;
@@ -28,7 +34,17 @@ public class TranslationParser {
             @Nullable
             @Override
             public TranslationParser apply(@Nullable PsiFile psiFile) {
-                return  new TranslationParser(psiFile);
+                return new TranslationParser(psiFile);
+            }
+        };
+    }
+
+    public static Predicate<? super TranslationParser> languageEqualsFunction(final String language) {
+        return new Predicate<TranslationParser>() {
+            @Nullable
+            @Override
+            public boolean apply(@Nullable TranslationParser parser) {
+                return language.equals(parser.getLanguage());
             }
         };
     }
@@ -41,6 +57,10 @@ public class TranslationParser {
                 return translationParser.getKey(text);
             }
         };
+    }
+
+    public String getLanguage() {
+        return psiFile.getName().replaceFirst(".php", "");
     }
 
     public String getKey(String translation) {
@@ -75,5 +95,26 @@ public class TranslationParser {
 
     private boolean is(PsiElement element, IElementType type) {
         return PlatformPatterns.psiElement(type).accepts(element);
+    }
+
+    public void addTranslation(String key, String text) {
+        Project project = psiFile.getProject();
+        final PsiDocumentManager manager = PsiDocumentManager.getInstance(project);
+        final Document document = manager.getDocument(psiFile);
+
+        final String finalInsertString = "\n'" + key + "' => '" + text + "',";
+        new WriteCommandAction(project) {
+            @Override
+            protected void run(Result result) throws Throwable {
+                document.insertString(document.getTextLength(), finalInsertString);
+                manager.doPostponedOperationsAndUnblockDocument(document);
+                manager.commitDocument(document);
+            }
+
+            @Override
+            public String getGroupID() {
+                return "Translation Extraction";
+            }
+        }.execute();
     }
 }
