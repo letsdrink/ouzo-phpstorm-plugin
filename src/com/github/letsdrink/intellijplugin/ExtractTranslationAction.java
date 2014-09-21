@@ -103,9 +103,9 @@ public class ExtractTranslationAction extends AnAction {
 
     private String getTextToTranslate(PsiElement psiElement) {
         if (psiElement.getParent() instanceof StringLiteralExpression) {
-            return ((StringLiteralExpression) psiElement.getParent()).getContents();
+            return ((StringLiteralExpression) psiElement.getParent()).getContents().trim();
         }
-        return psiElement.getText();
+        return psiElement.getText().trim();
     }
 
     private void replaceTextWithTranslation(final String key, final PsiElement finalPsiElement, final Editor editor) {
