@@ -21,6 +21,6 @@ class ControllerActionReferenceProvider extends PsiReferenceProvider {
     }
 
     public boolean acceptsTarget(@NotNull PsiElement target) {
-        return target instanceof StringLiteralExpression && ((StringLiteralExpression) target).getContents().contains("#");
+        return target instanceof StringLiteralExpression && ((StringLiteralExpression) target).getContents().contains("#") && ((StringLiteralExpression) target).getContents().split("#").length == 2;
     }
 }
