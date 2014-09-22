@@ -124,7 +124,7 @@ public class ExtractTranslationAction extends AnAction {
                 String insertString = "t('" + key + "')";
 
                 if (!isParentPhpString(finalPsiElement)) {
-                    insertString = "<?=" + insertString + "?>";
+                    insertString = "<?= " + insertString + "?>";
                 }
                 if (isJsLiteral(finalPsiElement.getNode().getElementType())) {
                     insertString = "'" + insertString + "'";
