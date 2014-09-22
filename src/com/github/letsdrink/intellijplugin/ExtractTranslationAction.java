@@ -106,8 +106,8 @@ public class ExtractTranslationAction extends AnAction {
     }
 
     private String getTextToTranslate(PsiElement psiElement) {
-        if (psiElement.getParent() instanceof StringLiteralExpression) {
-            return ((StringLiteralExpression) psiElement.getParent()).getContents().trim();
+        if (psiElement instanceof StringLiteralExpression) {
+            return ((StringLiteralExpression) psiElement).getContents().trim();
         }
         if (isJsLiteral(psiElement.getNode().getElementType())) {
             return StringUtils.strip(psiElement.getText().trim(), "\"'");
@@ -123,7 +123,12 @@ public class ExtractTranslationAction extends AnAction {
             protected void run(Result result) throws Throwable {
                 String insertString = "t('" + key + "')";
 
-                if (!isParentPhpString(finalPsiElement)) {
+                PsiFile file = finalPsiElement.getContainingFile();
+                if (!OuzoUtils.isInViewDir(file)) {
+                    insertString = "I18n::" + insertString;
+                }
+
+                if (!isPhpString(finalPsiElement)) {
                     insertString = "<?= " + insertString + "?>";
                 }
                 if (isJsLiteral(finalPsiElement.getNode().getElementType())) {
@@ -142,11 +147,11 @@ public class ExtractTranslationAction extends AnAction {
 
     private boolean isTypeSupported(PsiElement psiElement) {
         IElementType elementType = psiElement.getNode().getElementType();
-        return isXmlText(elementType) || elementType.toString().equals("XML_TEXT") || isJsLiteral(elementType) || isParentPhpString(psiElement) || elementType.equals(PhpElementTypes.WHITE_SPACE);
+        return isXmlText(elementType) || elementType.toString().equals("XML_TEXT") || isJsLiteral(elementType) || isPhpString(psiElement.getParent()) || elementType.equals(PhpElementTypes.WHITE_SPACE);
     }
 
-    private boolean isParentPhpString(PsiElement psiElement) {
-        return PlatformPatterns.psiElement(PhpElementTypes.STRING).accepts(psiElement.getParent());
+    private boolean isPhpString(PsiElement psiElement) {
+        return PlatformPatterns.psiElement(PhpElementTypes.STRING).accepts(psiElement);
     }
 
     private boolean isXmlText(IElementType elementType) {
@@ -154,6 +159,6 @@ public class ExtractTranslationAction extends AnAction {
     }
 
     private boolean isJsLiteral(IElementType elementType) {
-        return elementType.toString().equals("JS:STRING_LITERAL");
+        return elementType.toString().equals("JS:STRING_LITERAL") || "JS:LITERAL_EXPRESSION".equals(elementType.toString());
     }
 }
