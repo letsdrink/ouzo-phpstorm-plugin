@@ -9,7 +9,7 @@ import com.intellij.psi.PsiReference;
 import com.intellij.psi.PsiReferenceProvider;
 import com.intellij.util.ProcessingContext;
 import com.jetbrains.php.lang.psi.elements.ArrayHashElement;
-import com.jetbrains.php.lang.psi.elements.MethodReference;
+import com.jetbrains.php.lang.psi.elements.FunctionReference;
 import com.jetbrains.php.lang.psi.elements.ParameterList;
 import com.jetbrains.php.lang.psi.elements.StringLiteralExpression;
 import org.jetbrains.annotations.NotNull;
@@ -26,16 +26,16 @@ class TranslationReferenceProvider extends PsiReferenceProvider {
 
         ParameterList parameterList = (ParameterList) psiElement.getContext();
 
-        if (parameterList == null || !(parameterList.getContext() instanceof MethodReference)) {
+        if (parameterList == null || !(parameterList.getContext() instanceof FunctionReference)) {
             return new PsiReference[0];
         }
 
-        MethodReference method = (MethodReference) parameterList.getContext();
+        FunctionReference function = (FunctionReference) parameterList.getContext();
 
-        if (!isTranslatorCall(method) || !(method.getParameters()[0] instanceof StringLiteralExpression)) {
+        if (!isTranslatorCall(function) || !(function.getParameters()[0] instanceof StringLiteralExpression)) {
             return new PsiReference[0];
         }
-        String key = ((StringLiteralExpression) method.getParameters()[0]).getContents();
+        String key = ((StringLiteralExpression) function.getParameters()[0]).getContents();
 
         return FluentIterable.from(TranslationUtils.getTranslationFiles(psiElement.getProject()))
                 .transform(TranslationParser.createParser())
@@ -56,10 +56,10 @@ class TranslationReferenceProvider extends PsiReferenceProvider {
     }
 
     public boolean isTranslatorCall(PsiElement e) {
-        if (!(e instanceof MethodReference)) {
+        if (!(e instanceof FunctionReference)) {
             return false;
         }
-        MethodReference methodRef = (MethodReference) e;
-        return "t".equals(methodRef.getName());
+        FunctionReference ref = (FunctionReference) e;
+        return "t".equals(ref.getName());
     }
 }
