@@ -1,5 +1,6 @@
 package com.github.letsdrink.intellijplugin;
 
+import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Iterables;
@@ -23,9 +24,12 @@ import com.jetbrains.php.lang.parser.PhpElementTypes;
 import com.jetbrains.php.lang.psi.elements.StringLiteralExpression;
 import org.apache.commons.lang.StringUtils;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static java.util.Arrays.asList;
 
 public class ExtractTranslationAction extends AnAction {
     public ExtractTranslationAction() {
@@ -47,9 +51,11 @@ public class ExtractTranslationAction extends AnAction {
         if (!isTypeSupported(psiElement)) {
             return;
         }
-        if (isTypeSupported(psiElement.getParent())) {
+
+        if (Iterables.all(asList(psiElement.getParent().getChildren()), isSupportedPredicate())) {
             psiElement = psiElement.getParent();
         }
+
         final PsiElement finalPsiElement = psiElement;
 
         final String text = getTextToTranslate(finalPsiElement);
@@ -78,6 +84,15 @@ public class ExtractTranslationAction extends AnAction {
         dialog.setSize(500, 200);
         dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);
+    }
+
+    private Predicate<PsiElement> isSupportedPredicate() {
+        return new Predicate<PsiElement>() {
+            @Override
+            public boolean apply(@Nullable PsiElement psiElement) {
+                return isTypeSupported(psiElement);
+            }
+        };
     }
 
     private Map<String, String> createTranslationsMap(List<TranslationParser> translationParsers, String key, String text) {
@@ -127,8 +142,7 @@ public class ExtractTranslationAction extends AnAction {
 
     private boolean isTypeSupported(PsiElement psiElement) {
         IElementType elementType = psiElement.getNode().getElementType();
-        return isXmlText(elementType) || elementType.toString().equals("XML_TEXT") || isJsLiteral(elementType) || isParentPhpString(psiElement);
-
+        return isXmlText(elementType) || elementType.toString().equals("XML_TEXT") || isJsLiteral(elementType) || isParentPhpString(psiElement) || elementType.equals(PhpElementTypes.WHITE_SPACE);
     }
 
     private boolean isParentPhpString(PsiElement psiElement) {
