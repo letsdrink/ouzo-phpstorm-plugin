@@ -75,7 +75,7 @@ public class ExtractTranslationAction extends AnAction {
         });
         dialog.pack();
         dialog.setTitle("Input translation key");
-        dialog.setSize(300, 200);
+        dialog.setSize(500, 200);
         dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);
     }

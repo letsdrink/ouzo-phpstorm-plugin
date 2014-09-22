@@ -1,6 +1,7 @@
 package com.github.letsdrink.intellijplugin;
 
 import com.google.common.collect.ImmutableMap;
+import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,6 +35,8 @@ public class TranslationDialog extends JDialog {
 
         this.translations.setDefaultEditor(this.translations.getColumnClass(1), singleClick);
         this.translations.setRowHeight(30);
+        this.translations.setCellSelectionEnabled(false);
+        this.translations.getColumnModel().getColumn(0).setMaxWidth(40);
 
         key.setText(keyText);
         getRootPane().setDefaultButton(buttonOK);
@@ -70,7 +73,11 @@ public class TranslationDialog extends JDialog {
     }
 
     private void onOK() {
-        okCallback.onClick(key.getText());
+        String keyText = key.getText();
+        if (StringUtils.isBlank(keyText)) {
+            return;
+        }
+        okCallback.onClick(keyText);
         dispose();
     }
 
