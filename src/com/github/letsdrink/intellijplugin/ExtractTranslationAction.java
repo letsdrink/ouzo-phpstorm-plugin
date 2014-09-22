@@ -71,7 +71,7 @@ public class ExtractTranslationAction extends AnAction {
 
         TranslationDialog dialog = new TranslationDialog(key, translations, new TranslationDialog.OkCallback() {
             @Override
-            public void onClick(final String key) {
+            public void onClick(final String key, Map<String, String> translations) {
                 replaceTextWithTranslation(key, finalPsiElement, editor);
                 for (Map.Entry<String, String> entry : translations.entrySet()) {
                     TranslationParser parser = Iterables.find(translationParsers, TranslationParser.languageEqualsFunction(entry.getKey()));
@@ -81,7 +81,7 @@ public class ExtractTranslationAction extends AnAction {
         });
         dialog.pack();
         dialog.setTitle("Input translation key");
-        dialog.setSize(500, 200);
+        dialog.setSize(470, 200);
         dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);
     }

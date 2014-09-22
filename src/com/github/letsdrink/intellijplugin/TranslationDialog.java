@@ -1,51 +1,42 @@
 package com.github.letsdrink.intellijplugin;
 
+import com.github.letsdrink.intellijplugin.ui.TranslationsEditor;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.*;
 import java.util.Map;
 
 public class TranslationDialog extends JDialog {
     private final OkCallback okCallback;
 
+    private void createUIComponents() {
+        // TODO: place custom component creation code here
+    }
+
     public interface OkCallback {
-        void onClick(String key);
+        void onClick(String key, Map<String, String> translations);
     }
 
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
     private JTextField key;
-    private JTable translations;
+    private TranslationsEditor translations;
 
     public TranslationDialog(String keyText, Map<String, String> translationsMap, OkCallback okCallback) {
         this.okCallback = okCallback;
+        translations.initialize(translationsMap);
+
         setContentPane(contentPane);
         setModal(true);
-
-        this.translations.setModel(new TranslationsTableModel(translationsMap));
-
-        JTextField textField = new JTextField();
-        textField.setMargin(new Insets(0, 0 ,0, 0));
-        DefaultCellEditor singleClick = new DefaultCellEditor(textField);
-        singleClick.setClickCountToStart(1);
-
-        this.translations.setDefaultEditor(this.translations.getColumnClass(1), singleClick);
-        this.translations.setRowHeight(30);
-        this.translations.setCellSelectionEnabled(false);
-        this.translations.getColumnModel().getColumn(0).setMaxWidth(40);
 
         key.setText(keyText);
         getRootPane().setDefaultButton(buttonOK);
 
         buttonOK.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if (translations.getCellEditor() != null) {
-                    translations.getCellEditor().stopCellEditing();
-                }
                 onOK();
             }
         });
@@ -77,7 +68,7 @@ public class TranslationDialog extends JDialog {
         if (StringUtils.isBlank(keyText)) {
             return;
         }
-        okCallback.onClick(keyText);
+        okCallback.onClick(keyText, translations.getTranslations());
         dispose();
     }
 
@@ -89,7 +80,7 @@ public class TranslationDialog extends JDialog {
     public static void main(String[] args) {
         TranslationDialog dialog = new TranslationDialog("test", ImmutableMap.of("en", "asd"), new OkCallback() {
             @Override
-            public void onClick(final String key) {
+            public void onClick(final String key, Map<String, String> translations) {
             }
         });
         dialog.pack();

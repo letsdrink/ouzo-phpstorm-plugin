@@ -64,9 +64,6 @@
               </grid>
             </constraints>
             <properties/>
-            <clientProperties>
-              <caretAspectRatio class="java.lang.Float" value="0.04"/>
-            </clientProperties>
           </component>
           <component id="dd9ba" class="javax.swing.JLabel">
             <constraints>
@@ -78,18 +75,11 @@
           </component>
         </children>
       </grid>
-      <component id="8a58b" class="javax.swing.JTable" binding="translations">
+      <component id="73425" class="com.github.letsdrink.intellijplugin.ui.TranslationsEditor" binding="translations">
         <constraints>
-          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
-            <preferred-size width="150" height="50"/>
-          </grid>
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
-        <properties>
-          <intercellSpacing width="2" height="2"/>
-          <rowSelectionAllowed value="false"/>
-          <showHorizontalLines value="true"/>
-          <showVerticalLines value="true"/>
-        </properties>
+        <properties/>
       </component>
     </children>
   </grid>
