@@ -40,7 +40,9 @@ public class TranslationDialog extends JDialog {
 
         buttonOK.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                translations.getCellEditor().stopCellEditing();
+                if (translations.getCellEditor() != null) {
+                    translations.getCellEditor().stopCellEditing();
+                }
                 onOK();
             }
         });
