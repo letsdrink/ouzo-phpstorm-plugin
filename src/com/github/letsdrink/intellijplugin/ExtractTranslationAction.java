@@ -24,6 +24,7 @@ import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.xml.XmlTokenType;
 import com.jetbrains.php.lang.parser.PhpElementTypes;
 import com.jetbrains.php.lang.psi.elements.StringLiteralExpression;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,7 +65,7 @@ public class ExtractTranslationAction extends AnAction {
 
         String key = FluentIterable.from(translationParsers).transform(TranslationParser.getKeyFunction(text)).filter(Predicates.notNull()).first().or("");
 
-        final Map<String, String> translations = createTranslationsMap(translationParsers, key);
+        final Map<String, String> translations = createTranslationsMap(translationParsers, key, text);
 
         TranslationDialog dialog = new TranslationDialog(key, translations, new TranslationDialog.OkCallback() {
             @Override
@@ -83,11 +84,11 @@ public class ExtractTranslationAction extends AnAction {
         dialog.setVisible(true);
     }
 
-    private Map<String, String> createTranslationsMap(List<TranslationParser> translationParsers, String key) {
+    private Map<String, String> createTranslationsMap(List<TranslationParser> translationParsers, String key, String text) {
         final Map<String, String> translations = new HashMap<String, String>();
         for (TranslationParser translationParser : translationParsers) {
             String translation = translationParser.getTranslation(key);
-            translation = translation == null ? "" : translation;
+            translation = translation == null ? text : translation;
             translations.put(translationParser.getLanguage(), translation);
         }
         return translations;
@@ -110,6 +111,9 @@ public class ExtractTranslationAction extends AnAction {
     private String getTextToTranslate(PsiElement psiElement) {
         if (psiElement.getParent() instanceof StringLiteralExpression) {
             return ((StringLiteralExpression) psiElement.getParent()).getContents().trim();
+        }
+        if (isJsLiteral(psiElement.getNode().getElementType())) {
+            return StringUtils.strip(psiElement.getText().trim(), "\"'");
         }
         return psiElement.getText().trim();
     }
