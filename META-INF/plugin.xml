@@ -2,7 +2,7 @@
     <id>com.github.letsdrink.intellijplugin</id>
     <name>Ouzo framework plugin</name>
     <version>1.0</version>
-    <vendor email="ouzo-framework@googlegroups.com" url="http://http://ouzoframework.org/">Ouzo framework</vendor>
+    <vendor email="ouzo-framework@googlegroups.com" url="http://ouzoframework.org/">Ouzo framework</vendor>
 
     <description>Ouzo framework plugin</description>
 
