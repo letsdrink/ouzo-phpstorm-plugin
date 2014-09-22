@@ -21,7 +21,7 @@ public class TranslationCodeBuilder {
         appendKey(sb, Iterables.getLast(keys));
 
         sb.append("'");
-        sb.append(text);
+        sb.append(text.replaceAll("'", "\\\\'"));
         sb.append("'");
 
         level = keys.size() - 1;

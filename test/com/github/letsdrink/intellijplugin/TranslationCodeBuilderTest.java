@@ -23,5 +23,12 @@ public class TranslationCodeBuilderTest {
 
         Assert.assertEquals("\n\t\t'key2' => array(\n\t\t\t'key3' => array(\n\t\t\t\t'key4' => 'value'\n\t\t\t)\n\t\t)", insertionText);
     }
+
+    @Test
+    public void shouldEscapeString() {
+        String insertionText = translationCodeBuilder.getInsertionText("val'ue", asList("key1", "key2", "key3"), new ArrayList<String>(), true);
+
+        Assert.assertEquals("\n\t\t\t'key3' => 'val\\'ue',", insertionText);
+    }
 }
 
