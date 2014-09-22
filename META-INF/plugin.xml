@@ -14,6 +14,7 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <psi.referenceContributor implementation="com.github.letsdrink.intellijplugin.ControllerPsiReferenceContributor"/>
+        <psi.referenceContributor implementation="com.github.letsdrink.intellijplugin.TranslationPsiReferenceContributor"/>
 
         <projectConfigurable instance="com.github.letsdrink.intellijplugin.SettingsForm" id="Ouzo.SettingsForm" displayName="Ouzo"/>
         <projectService serviceImplementation="com.github.letsdrink.intellijplugin.Settings"/>

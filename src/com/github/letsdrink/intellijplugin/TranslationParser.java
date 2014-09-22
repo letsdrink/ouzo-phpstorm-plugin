@@ -64,6 +64,16 @@ public class TranslationParser {
         };
     }
 
+    public static Function<TranslationParser, ArrayHashElement> getTranslationElementFunction(final String key) {
+        return new Function<TranslationParser, ArrayHashElement>() {
+            @Nullable
+            @Override
+            public ArrayHashElement apply(@Nullable TranslationParser translationParser) {
+                return translationParser.getTranslationElement(key);
+            }
+        };
+    }
+
     public String getLanguage() {
         return psiFile.getName().replaceFirst(".php", "");
     }
@@ -81,16 +91,22 @@ public class TranslationParser {
         return null;
     }
 
-    public String getTranslation(String key) {
+    public ArrayHashElement getTranslationElement(String key) {
         List<String> keys = Splitter.on(".").splitToList(key);
         List<String> missingKeys = new ArrayList<String>();
         PsiElement translationArray = findDestinationArrayParent(keys, missingKeys);
 
         if (missingKeys.isEmpty()) {
             Optional<PsiElement> elementOptional = Iterables.tryFind(asList(translationArray.getChildren()), hasArrayElementKey(Iterables.getLast(keys)));
-            return  elementOptional.isPresent() ? getContent(((ArrayHashElement) elementOptional.get()).getValue()) : null;
+            return (ArrayHashElement) elementOptional.orNull();
         }
         return null;
+    }
+
+
+    public String getTranslation(String key) {
+        ArrayHashElement translationElement = getTranslationElement(key);
+        return translationElement != null ? getContent(translationElement.getValue()) : null;
     }
 
     private String getKey(ArrayHashElement hashElement) {

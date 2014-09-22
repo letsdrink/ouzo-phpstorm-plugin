@@ -13,20 +13,16 @@ import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.openapi.vfs.VfsUtil;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiManager;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.xml.XmlTokenType;
 import com.jetbrains.php.lang.parser.PhpElementTypes;
 import com.jetbrains.php.lang.psi.elements.StringLiteralExpression;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,7 +56,7 @@ public class ExtractTranslationAction extends AnAction {
 
         final Project project = finalPsiElement.getProject();
 
-        List<PsiFile> translationFiles = getTranslationFiles(project);
+        List<PsiFile> translationFiles = TranslationUtils.getTranslationFiles(project);
         final List<TranslationParser> translationParsers = Lists.transform(translationFiles, TranslationParser.createParser());
 
         String key = FluentIterable.from(translationParsers).transform(TranslationParser.getKeyFunction(text)).filter(Predicates.notNull()).first().or("");
@@ -92,20 +88,6 @@ public class ExtractTranslationAction extends AnAction {
             translations.put(translationParser.getLanguage(), translation);
         }
         return translations;
-    }
-
-    private List<PsiFile> getTranslationFiles(Project project) {
-        List<PsiFile> translationFiles = new ArrayList<PsiFile>();
-        Settings settings = Settings.getInstance(project);
-
-        VirtualFile[] locales = VfsUtil.getChildren(settings.getOuzoProjectRoot().findChild("locales"));
-
-        for (VirtualFile locale : locales) {
-            if ("php".equals(locale.getExtension())) {
-                translationFiles.add(PsiManager.getInstance(project).findFile(locale));
-            }
-        }
-        return translationFiles;
     }
 
     private String getTextToTranslate(PsiElement psiElement) {
