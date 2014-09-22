@@ -2,9 +2,9 @@
     <id>com.github.letsdrink.intellijplugin</id>
     <name>Ouzo framework plugin</name>
     <version>1.0</version>
-    <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+    <vendor email="ouzo-framework@googlegroups.com" url="http://http://ouzoframework.org/">Ouzo framework</vendor>
 
-    <description>ouzo framework plugin</description>
+    <description>Ouzo framework plugin</description>
 
     <change-notes>
     </change-notes>
@@ -13,8 +13,10 @@
     <idea-version since-build="107.105"/>
 
     <extensions defaultExtensionNs="com.intellij">
-        <psi.referenceContributor
-                implementation="com.github.letsdrink.intellijplugin.ControllerPsiReferenceContributor"/>
+        <psi.referenceContributor implementation="com.github.letsdrink.intellijplugin.ControllerPsiReferenceContributor"/>
+
+        <projectConfigurable instance="com.github.letsdrink.intellijplugin.SettingsForm" id="Ouzo.SettingsForm" displayName="Ouzo"/>
+        <projectService serviceImplementation="com.github.letsdrink.intellijplugin.Settings"/>
     </extensions>
 
     <depends>com.jetbrains.php</depends>

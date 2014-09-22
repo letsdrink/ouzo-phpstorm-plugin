@@ -95,9 +95,14 @@ public class ExtractTranslationAction extends AnAction {
 
     private List<PsiFile> getTranslationFiles(Project project) {
         List<PsiFile> translationFiles = new ArrayList<PsiFile>();
-        VirtualFile[] locales = VfsUtil.getChildren(project.getBaseDir().findChild("locales"));
+        Settings settings = Settings.getInstance(project);
+
+        VirtualFile[] locales = VfsUtil.getChildren(settings.getOuzoProjectRoot().findChild("locales"));
+
         for (VirtualFile locale : locales) {
-            translationFiles.add(PsiManager.getInstance(project).findFile(locale));
+            if ("php".equals(locale.getExtension())) {
+                translationFiles.add(PsiManager.getInstance(project).findFile(locale));
+            }
         }
         return translationFiles;
     }
