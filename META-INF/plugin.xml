@@ -1,10 +1,21 @@
-<idea-plugin version="2">
+<idea-plugin version="2" url="https://github.com/letsdrink/ouzo-phpstorm-plugin">
     <id>com.github.letsdrink.intellijplugin</id>
     <name>Ouzo framework plugin</name>
     <version>1.0</version>
-    <vendor email="ouzo-framework@googlegroups.com" url="http://ouzoframework.org/">Ouzo framework</vendor>
+    <vendor email="ouzo-framework@googlegroups.com" url="http://ouzoframework.org/">Ouzo contributors</vendor>
 
-    <description>Ouzo framework plugin</description>
+    <description><![CDATA[
+<h1>Ouzo framework plugin</h1>
+
+<a href="http://ouzoframework.org/">ouzoframework.org</a>
+
+<h2>Features:</h2>
+<ul>
+    <li>Translation extraction action</li>
+    <li>References for translation keys</li>
+    <li>References for controllers in routes</li>
+</ul>
+    ]]></description>
 
     <change-notes>
     </change-notes>
