@@ -7,9 +7,12 @@
     <description><![CDATA[
 <h1>Ouzo framework plugin</h1>
 
+<br/>
 <a href="http://ouzoframework.org/">ouzoframework.org</a>
+<br/>
 
 <h2>Features:</h2>
+
 <ul>
     <li>Translation extraction action</li>
     <li>References for translation keys</li>
