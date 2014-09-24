@@ -12,7 +12,7 @@ public abstract class BaseViewReferenceProvider extends PsiReferenceProvider {
             return new PsiReference[0];
         }
         String viewName = PsiUtils.getContent(psiElement);
-        PsiFile viewPsiFile = OuzoUtils.getViewPsiFile(psiElement.getContainingFile(), viewName);
+        PsiFile viewPsiFile = OuzoUtils.getViewPsiFile(psiElement.getProject(), viewName);
 
         if (viewPsiFile == null) {
             return new PsiReference[0];

@@ -40,13 +40,7 @@ public class ExtractTranslationAction extends AnAction {
 
         final Editor editor = event.getData(PlatformDataKeys.EDITOR);
         PsiFile psiFile = event.getData(LangDataKeys.PSI_FILE);
-        if (psiFile == null || editor == null)
-            return;
-
-        int offset = editor.getCaretModel().getOffset();
-        PsiElement psiElement = psiFile.findElementAt(offset);
-        if (psiElement == null || psiElement.getNode() == null)
-            return;
+        PsiElement psiElement = PsiUtils.getCurrentElement(editor, psiFile);
 
         if (!isTypeSupported(psiElement)) {
             return;

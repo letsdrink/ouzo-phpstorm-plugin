@@ -36,6 +36,8 @@
 
         <projectConfigurable instance="com.github.letsdrink.intellijplugin.SettingsForm" id="Ouzo.SettingsForm" displayName="Ouzo"/>
         <projectService serviceImplementation="com.github.letsdrink.intellijplugin.Settings"/>
+
+        <gotoRelatedProvider implementation="com.github.letsdrink.intellijplugin.PhpGoToRelatedProvider"/>
     </extensions>
 
     <depends>com.jetbrains.php</depends>
@@ -45,6 +47,11 @@
         <action id="ExtractTranslationAction" class="com.github.letsdrink.intellijplugin.ExtractTranslationAction"
                 text="Extract translation" description="Extract translation">
             <add-to-group group-id="RefactoringMenu" anchor="last"/>
+        </action>
+
+        <action id="GoToOuzoView" class="com.github.letsdrink.intellijplugin.GoToViewAction" text="Ouzo view">
+            <add-to-group group-id="GoToTargetEx"/>
+            <add-to-group group-id="EditorPopupMenu.GoTo"/>
         </action>
     </actions>
 </idea-plugin>

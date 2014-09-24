@@ -1,6 +1,8 @@
 package com.github.letsdrink.intellijplugin;
 
+import com.intellij.openapi.editor.Editor;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiReference;
 import com.jetbrains.php.lang.psi.elements.*;
 
@@ -57,4 +59,12 @@ public class PsiUtils {
         return currentMethod.equals(method);
     }
 
+    public static PsiElement getCurrentElement(Editor editor, PsiFile psiFile) {
+        if (psiFile == null || editor == null)
+            return null;
+        int offset = editor.getCaretModel().getOffset();
+        PsiElement psiElement = psiFile.findElementAt(offset);
+
+        return psiElement;
+    }
 }
