@@ -18,6 +18,7 @@
     <li>References for translation keys</li>
     <li>References for controllers in routes</li>
     <li>References for views</li>
+    <li>References for partials</li>
 </ul>
     ]]></description>
 
