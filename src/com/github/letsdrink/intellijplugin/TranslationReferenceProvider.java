@@ -9,9 +9,6 @@ import com.intellij.psi.PsiReference;
 import com.intellij.psi.PsiReferenceProvider;
 import com.intellij.util.ProcessingContext;
 import com.jetbrains.php.lang.psi.elements.ArrayHashElement;
-import com.jetbrains.php.lang.psi.elements.FunctionReference;
-import com.jetbrains.php.lang.psi.elements.ParameterList;
-import com.jetbrains.php.lang.psi.elements.StringLiteralExpression;
 import org.jetbrains.annotations.NotNull;
 
 class TranslationReferenceProvider extends PsiReferenceProvider {
@@ -20,22 +17,10 @@ class TranslationReferenceProvider extends PsiReferenceProvider {
     @NotNull
     @Override
     public PsiReference[] getReferencesByElement(@NotNull PsiElement psiElement, @NotNull ProcessingContext processingContext) {
-        if (!(psiElement.getContext() instanceof ParameterList)) {
+        if (!PsiUtils.isElementTheFirstParameterInFunctionCall(psiElement, "t")) {
             return new PsiReference[0];
         }
-
-        ParameterList parameterList = (ParameterList) psiElement.getContext();
-
-        if (parameterList == null || !(parameterList.getContext() instanceof FunctionReference)) {
-            return new PsiReference[0];
-        }
-
-        FunctionReference function = (FunctionReference) parameterList.getContext();
-
-        if (!isTranslatorCall(function) || !(function.getParameters()[0] instanceof StringLiteralExpression)) {
-            return new PsiReference[0];
-        }
-        String key = ((StringLiteralExpression) function.getParameters()[0]).getContents();
+        String key = PsiUtils.getContent(psiElement);
 
         return FluentIterable.from(TranslationUtils.getTranslationFiles(psiElement.getProject()))
                 .transform(TranslationParser.createParser())
@@ -53,13 +38,5 @@ class TranslationReferenceProvider extends PsiReferenceProvider {
                 return new TranslationReference(psiElement, element.getValue(), PsiUtils.getContent(element.getValue()));
             }
         };
-    }
-
-    public boolean isTranslatorCall(PsiElement e) {
-        if (!(e instanceof FunctionReference)) {
-            return false;
-        }
-        FunctionReference ref = (FunctionReference) e;
-        return "t".equals(ref.getName());
     }
 }
