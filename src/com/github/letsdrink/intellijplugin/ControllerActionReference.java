@@ -1,22 +1,15 @@
 package com.github.letsdrink.intellijplugin;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementPresentation;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceBase;
-import com.jetbrains.php.PhpIndex;
 import com.jetbrains.php.lang.psi.elements.Method;
-import com.jetbrains.php.lang.psi.elements.PhpClass;
 import com.jetbrains.php.lang.psi.elements.StringLiteralExpression;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Collection;
 
 public class ControllerActionReference extends PsiReferenceBase<PsiElement> {
     private String controller;
@@ -45,23 +38,7 @@ public class ControllerActionReference extends PsiReferenceBase<PsiElement> {
     @Nullable
     @Override
     public Method resolve() {
-        PhpIndex phpIndex = PhpIndex.getInstance(psiElement.getProject());
-        Collection<PhpClass> phpClasses = phpIndex.getClassesByFQN(controller);
-
-        for (PhpClass phpClass : phpClasses) {
-            Optional<Method> method = Iterables.tryFind(phpClass.getMethods(), new Predicate<Method>() {
-                @Override
-                public boolean apply(Method method) {
-                    return method.getName().equals(action);
-                }
-            });
-
-            if (method.isPresent()) {
-                return method.get();
-            }
-            return null;
-        }
-        return null;
+        return PhpIndexUtils.getClassMethod(psiElement.getProject(), controller, action);
     }
 
     class ControllerActionLookupElement extends LookupElement {

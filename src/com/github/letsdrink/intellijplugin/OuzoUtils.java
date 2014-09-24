@@ -11,8 +11,8 @@ public class OuzoUtils {
         return VfsUtil.getRelativePath(file.getVirtualFile(), Settings.getInstance(file.getProject()).getOuzoProjectRoot(), '/').startsWith("application/view");
     }
 
-    public static PsiFile getPartialPsiFile(PsiFile context, String partialName) {
-        VirtualFile virtualFile = Settings.getInstance(context.getProject()).getOuzoProjectRoot().findFileByRelativePath("/application/view/" + partialName + ".phtml");
+    public static PsiFile getViewPsiFile(PsiFile context, String viewName) {
+        VirtualFile virtualFile = Settings.getInstance(context.getProject()).getOuzoProjectRoot().findFileByRelativePath("/application/view/" + viewName + ".phtml");
         if (virtualFile == null) {
             return null;
         }

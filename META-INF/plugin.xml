@@ -30,6 +30,7 @@
         <psi.referenceContributor implementation="com.github.letsdrink.intellijplugin.ControllerPsiReferenceContributor"/>
         <psi.referenceContributor implementation="com.github.letsdrink.intellijplugin.TranslationPsiReferenceContributor"/>
         <psi.referenceContributor implementation="com.github.letsdrink.intellijplugin.PartialReferenceContributor"/>
+        <psi.referenceContributor implementation="com.github.letsdrink.intellijplugin.ViewReferenceContributor"/>
 
         <projectConfigurable instance="com.github.letsdrink.intellijplugin.SettingsForm" id="Ouzo.SettingsForm" displayName="Ouzo"/>
         <projectService serviceImplementation="com.github.letsdrink.intellijplugin.Settings"/>
