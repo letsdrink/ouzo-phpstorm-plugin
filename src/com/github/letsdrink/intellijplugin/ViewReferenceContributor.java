@@ -13,7 +13,7 @@ public class ViewReferenceContributor extends PsiReferenceContributor {
         psiReferenceRegistrar.registerReferenceProvider(PlatformPatterns.psiElement(StringLiteralExpression.class), new BaseViewReferenceProvider() {
             @Override
             protected boolean isApplicable(PsiElement psiElement) {
-                Method renderMethod = PhpIndexUtils.getClassMethod(psiElement.getProject(), "Ouzo\\View", "render");
+                Method renderMethod = OuzoUtils.getOuzoViewRenderMethod(psiElement.getProject());
                 return PsiUtils.isElementTheFirstParameterInMethodCall(psiElement, renderMethod);
             }
         });

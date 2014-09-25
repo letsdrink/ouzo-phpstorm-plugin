@@ -1,7 +1,7 @@
 <idea-plugin version="2" url="https://github.com/letsdrink/ouzo-phpstorm-plugin">
     <id>com.github.letsdrink.intellijplugin</id>
     <name>Ouzo framework plugin</name>
-    <version>1.1</version>
+    <version>1.2.0</version>
     <vendor email="ouzo-framework@googlegroups.com" url="http://ouzoframework.org/">Ouzo contributors</vendor>
 
     <description><![CDATA[
@@ -19,6 +19,7 @@
     <li>References for controllers in routes</li>
     <li>References for views</li>
     <li>References for partials</li>
+    <li>Navigation from Controllers actions to corresponding views (with 'Go To/Ouzo View' and 'Navigate/Related symbol' (Ctrl+Alt+Home))</li>
 </ul>
     ]]></description>
 
@@ -49,7 +50,7 @@
             <add-to-group group-id="RefactoringMenu" anchor="last"/>
         </action>
 
-        <action id="GoToOuzoView" class="com.github.letsdrink.intellijplugin.GoToViewAction" text="Ouzo view">
+        <action id="GoToOuzoView" class="com.github.letsdrink.intellijplugin.GoToViewAction" text="Ouzo View">
             <add-to-group group-id="GoToTargetEx"/>
             <add-to-group group-id="EditorPopupMenu.GoTo"/>
         </action>

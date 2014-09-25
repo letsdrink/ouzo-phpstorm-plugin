@@ -1,6 +1,10 @@
 package com.github.letsdrink.intellijplugin;
 
 
+import com.google.common.base.Function;
+import com.google.common.base.Predicates;
+import com.google.common.collect.FluentIterable;
+import com.google.common.collect.Iterables;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -10,12 +14,14 @@ import com.intellij.psi.PsiManager;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.jetbrains.php.lang.PhpLanguage;
 import com.jetbrains.php.lang.psi.elements.Method;
+import com.jetbrains.php.lang.psi.elements.MethodReference;
 import com.jetbrains.php.lang.psi.elements.PhpClass;
 
+import javax.annotation.Nullable;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
-import static java.util.Arrays.asList;
 
 public class OuzoUtils {
     public static boolean isInViewDir(PsiFile file) {
@@ -34,12 +40,40 @@ public class OuzoUtils {
         if (psiElement.getLanguage() != PhpLanguage.INSTANCE) {
             return Collections.emptyList();
         }
-        Method method = PsiTreeUtil.getParentOfType(psiElement, Method.class);
-        if (method == null || !method.getContainingClass().getName().endsWith("Controller")) {
+        Method containingMethod = PsiTreeUtil.getParentOfType(psiElement, Method.class);
+        PhpClass controllerClass = containingMethod.getContainingClass();
+
+        if (containingMethod == null || !controllerClass.getName().endsWith("Controller")) {
             return Collections.emptyList();
         }
-        PhpClass controllerClass = method.getContainingClass();
+
+        Collection<MethodReference> methodCalls = PsiTreeUtil.collectElementsOfType(containingMethod, MethodReference.class);
+        Project project = psiElement.getProject();
+        Method renderMethod = OuzoUtils.getOuzoViewRenderMethod(project);
+
+        FluentIterable<String> viewNames = FluentIterable.from(methodCalls)
+                .filter(PsiFunctions.isCallTo(renderMethod))
+                .transform(PsiFunctions.extractFirstArgumentStringContent());
+
         String resource = controllerClass.getName().replaceAll("Controller", "");
-        return asList(OuzoUtils.getViewPsiFile(psiElement.getProject(), resource + "/" + method.getName()));
+
+        return FluentIterable.from(Iterables.concat(viewNames, Arrays.asList(resource + "/" + containingMethod.getName())))
+                .transform(getViewPsiFileFunction(project))
+                .filter(Predicates.notNull())
+                .toList();
+    }
+
+    private static Function<String, PsiFile> getViewPsiFileFunction(final Project project) {
+        return new Function<String, PsiFile>() {
+            @Nullable
+            @Override
+            public PsiFile apply(@Nullable String viewName) {
+                return getViewPsiFile(project, viewName);
+            }
+        };
+    }
+
+    public static Method getOuzoViewRenderMethod(Project project) {
+        return PhpIndexUtils.getClassMethod(project, "Ouzo\\View", "render");
     }
 }

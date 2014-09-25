@@ -8,6 +8,9 @@ import com.jetbrains.php.lang.psi.elements.*;
 
 public class PsiUtils {
     public static String getContent(PsiElement value) {
+        if (!(value instanceof StringLiteralExpression)) {
+            return null;
+        }
         return ((StringLiteralExpression) value).getContents();
     }
 
@@ -46,6 +49,10 @@ public class PsiUtils {
             return false;
         }
 
+        return isMethodCallTo(methodReference, method);
+    }
+
+    public static boolean isMethodCallTo(MethodReference methodReference, Method method) {
         PsiReference psiReference = methodReference.getReference();
         if (psiReference == null) {
             return false;
