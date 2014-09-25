@@ -97,4 +97,8 @@ public class OuzoUtils {
     public static Method getRoutePutMethod(Project project) {
         return PhpIndexUtils.getClassMethod(project, "Ouzo\\Routing\\Route", "put");
     }
+
+    public static boolean isExpectedFile(PsiElement psiElement, String filename) {
+        return PsiUtils.getContainingFilename(psiElement).equals(filename);
+    }
 }

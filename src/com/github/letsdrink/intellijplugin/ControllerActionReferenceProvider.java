@@ -24,7 +24,6 @@ public abstract class ControllerActionReferenceProvider extends PsiReferenceProv
         }
         String controller = extractController(PsiUtils.getContent(psiElement));
         String action = extractAction(PsiUtils.getContent(psiElement));
-        System.out.println(action);
 
         PhpIndex phpIndex = PhpIndex.getInstance(psiElement.getProject());
         Collection<PhpClass> phpClasses = phpIndex.getClassesByFQN(controller);

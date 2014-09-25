@@ -83,4 +83,8 @@ public class PsiUtils {
 
         return psiElement;
     }
+
+    public static String getContainingFilename(PsiElement psiElement) {
+        return psiElement.getContainingFile().getName();
+    }
 }

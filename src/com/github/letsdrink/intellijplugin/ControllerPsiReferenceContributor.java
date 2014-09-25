@@ -20,11 +20,12 @@ public class ControllerPsiReferenceContributor extends PsiReferenceContributor {
                 Method deleteMethod = OuzoUtils.getRouteDeleteMethod(psiElement.getProject());
                 Method putMethod = OuzoUtils.getRoutePutMethod(psiElement.getProject());
 
-                return PsiUtils.isElementTheFirstParameterInMethodCall(psiElement, resourceMethod) ||
+                return OuzoUtils.isExpectedFile(psiElement, "routes.php") &&
+                        (PsiUtils.isElementTheFirstParameterInMethodCall(psiElement, resourceMethod) ||
                         PsiUtils.isElementTheNthParameterInMethodCall(psiElement, getMethod, 1) ||
                         PsiUtils.isElementTheNthParameterInMethodCall(psiElement, postMethod, 1) ||
                         PsiUtils.isElementTheNthParameterInMethodCall(psiElement, deleteMethod, 1) ||
-                        PsiUtils.isElementTheNthParameterInMethodCall(psiElement, putMethod, 1);
+                        PsiUtils.isElementTheNthParameterInMethodCall(psiElement, putMethod, 1));
             }
         });
     }
