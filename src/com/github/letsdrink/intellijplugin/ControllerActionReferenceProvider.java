@@ -1,26 +1,49 @@
 package com.github.letsdrink.intellijplugin;
 
-import com.intellij.openapi.diagnostic.Logger;
+import com.google.common.collect.Iterables;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
+import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.PsiReferenceProvider;
 import com.intellij.util.ProcessingContext;
-import com.jetbrains.php.lang.psi.elements.StringLiteralExpression;
+import com.jetbrains.php.PhpIndex;
+import com.jetbrains.php.lang.psi.elements.PhpClass;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.WordUtils;
 import org.jetbrains.annotations.NotNull;
 
-class ControllerActionReferenceProvider extends PsiReferenceProvider {
-    private static final Logger log = Logger.getInstance(ControllerActionReferenceProvider.class);
+import java.util.Collection;
 
+public abstract class ControllerActionReferenceProvider extends PsiReferenceProvider {
     @NotNull
     @Override
     public PsiReference[] getReferencesByElement(@NotNull PsiElement psiElement, @NotNull ProcessingContext processingContext) {
-        if (!acceptsTarget(psiElement)) {
+        if (!isApplicable(psiElement)) {
             return new PsiReference[]{};
         }
-        return new PsiReference[]{new ControllerActionReference(psiElement)};
+
+        String controller = sanitizeController(PsiUtils.getContent(psiElement));
+
+        PhpIndex phpIndex = PhpIndex.getInstance(psiElement.getProject());
+        Collection<PhpClass> phpClasses = phpIndex.getClassesByFQN(controller);
+
+        PhpClass phpClass = Iterables.getLast(phpClasses, null);
+
+        PsiReferenceBase.Immediate reference = new PsiReferenceBase.Immediate(psiElement, phpClass);
+        return new PsiReference[]{reference};
     }
 
-    public boolean acceptsTarget(@NotNull PsiElement target) {
-        return target instanceof StringLiteralExpression && ((StringLiteralExpression) target).getContents().contains("#") && ((StringLiteralExpression) target).getContents().split("#").length == 2;
+    private String sanitizeController(String controller) {
+        return "Controller\\" + prepareNamespace(underscoreToCamelCase(controller)) + "Controller";
     }
+
+    private String underscoreToCamelCase(String text) {
+        return StringUtils.capitalize(WordUtils.capitalizeFully(text, new char[]{'_'}).replaceAll("_", ""));
+    }
+
+    private String prepareNamespace(String s) {
+        return s.replace('/', '\\');
+    }
+
+    protected abstract boolean isApplicable(PsiElement psiElement);
 }

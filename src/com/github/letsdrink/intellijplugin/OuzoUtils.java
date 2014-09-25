@@ -1,6 +1,5 @@
 package com.github.letsdrink.intellijplugin;
 
-
 import com.google.common.base.Function;
 import com.google.common.base.Predicates;
 import com.google.common.collect.FluentIterable;
@@ -77,5 +76,9 @@ public class OuzoUtils {
 
     public static Method getOuzoViewRenderMethod(Project project) {
         return PhpIndexUtils.getClassMethod(project, "Ouzo\\View", "render");
+    }
+
+    public static Method getRouteResourceMethod(Project project) {
+        return PhpIndexUtils.getClassMethod(project, "Ouzo\\Routing\\Route", "resource");
     }
 }
