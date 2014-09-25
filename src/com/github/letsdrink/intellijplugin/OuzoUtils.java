@@ -25,7 +25,9 @@ import java.util.List;
 
 public class OuzoUtils {
     public static boolean isInViewDir(PsiFile file) {
-        return VfsUtil.getRelativePath(file.getVirtualFile(), Settings.getInstance(file.getProject()).getOuzoProjectRoot(), '/').startsWith("application/view");
+        VirtualFile ouzoProjectRoot = Settings.getInstance(file.getProject()).getOuzoProjectRoot();
+        String relativePath = VfsUtil.getRelativePath(file.getVirtualFile(), ouzoProjectRoot, '/');
+        return relativePath != null && relativePath.startsWith("application/view");
     }
 
     public static PsiFile getViewPsiFile(Project project, String viewName) {
