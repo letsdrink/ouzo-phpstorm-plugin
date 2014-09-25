@@ -1,8 +1,9 @@
 package com.github.letsdrink.intellijplugin.ui;
 
-
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,9 +14,15 @@ public class TranslationsEditor extends JPanel {
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
         for (Map.Entry<String, String> entry : translationsMap.entrySet()) {
-            JTextField textField = new JTextField();
+            final JTextField textField = new JTextField();
             textField.setPreferredSize(new Dimension(400, 25));
             textField.setText(entry.getValue());
+            textField.addFocusListener(new FocusAdapter() {
+                @Override
+                public void focusGained(FocusEvent e) {
+                    textField.selectAll();
+                }
+            });
             inputs.put(entry.getKey(), textField);
 
             FlowLayout layout = new FlowLayout();
@@ -36,5 +43,4 @@ public class TranslationsEditor extends JPanel {
         }
         return translations;
     }
-
 }
