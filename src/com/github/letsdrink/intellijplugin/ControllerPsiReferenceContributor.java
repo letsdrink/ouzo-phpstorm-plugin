@@ -14,8 +14,17 @@ public class ControllerPsiReferenceContributor extends PsiReferenceContributor {
         psiReferenceRegistrar.registerReferenceProvider(PlatformPatterns.psiElement(StringLiteralExpression.class), new ControllerActionReferenceProvider() {
             @Override
             protected boolean isApplicable(PsiElement psiElement) {
-                Method renderMethod = OuzoUtils.getRouteResourceMethod(psiElement.getProject());
-                return PsiUtils.isElementTheFirstParameterInMethodCall(psiElement, renderMethod);
+                Method resourceMethod = OuzoUtils.getRouteResourceMethod(psiElement.getProject());
+                Method getMethod = OuzoUtils.getRouteGetMethod(psiElement.getProject());
+                Method postMethod = OuzoUtils.getRoutePostMethod(psiElement.getProject());
+                Method deleteMethod = OuzoUtils.getRouteDeleteMethod(psiElement.getProject());
+                Method putMethod = OuzoUtils.getRoutePutMethod(psiElement.getProject());
+
+                return PsiUtils.isElementTheFirstParameterInMethodCall(psiElement, resourceMethod) ||
+                        PsiUtils.isElementTheNthParameterInMethodCall(psiElement, getMethod, 1) ||
+                        PsiUtils.isElementTheNthParameterInMethodCall(psiElement, postMethod, 1) ||
+                        PsiUtils.isElementTheNthParameterInMethodCall(psiElement, deleteMethod, 1) ||
+                        PsiUtils.isElementTheNthParameterInMethodCall(psiElement, putMethod, 1);
             }
         });
     }

@@ -52,6 +52,15 @@ public class PsiUtils {
         return isMethodCallTo(methodReference, method);
     }
 
+    public static boolean isElementTheNthParameterInMethodCall(PsiElement psiElement, Method method, int n) {
+        ParameterList parameterList = (ParameterList) psiElement.getContext();
+        MethodReference methodReference = (MethodReference) parameterList.getContext();
+        if (!methodReference.getParameters()[n].equals(psiElement)) {
+            return false;
+        }
+        return isMethodCallTo(methodReference, method);
+    }
+
     public static boolean isMethodCallTo(MethodReference methodReference, Method method) {
         PsiReference psiReference = methodReference.getReference();
         if (psiReference == null) {

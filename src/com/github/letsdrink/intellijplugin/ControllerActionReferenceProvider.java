@@ -7,6 +7,7 @@ import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.PsiReferenceProvider;
 import com.intellij.util.ProcessingContext;
 import com.jetbrains.php.PhpIndex;
+import com.jetbrains.php.lang.psi.elements.Method;
 import com.jetbrains.php.lang.psi.elements.PhpClass;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
@@ -21,19 +22,24 @@ public abstract class ControllerActionReferenceProvider extends PsiReferenceProv
         if (!isApplicable(psiElement)) {
             return new PsiReference[]{};
         }
-
-        String controller = sanitizeController(PsiUtils.getContent(psiElement));
+        String controller = extractController(PsiUtils.getContent(psiElement));
+        String action = extractAction(PsiUtils.getContent(psiElement));
+        System.out.println(action);
 
         PhpIndex phpIndex = PhpIndex.getInstance(psiElement.getProject());
         Collection<PhpClass> phpClasses = phpIndex.getClassesByFQN(controller);
 
         PhpClass phpClass = Iterables.getLast(phpClasses, null);
+        Method classMethod = PhpIndexUtils.getClassMethod(psiElement.getProject(), controller, action);
 
-        PsiReferenceBase.Immediate reference = new PsiReferenceBase.Immediate(psiElement, phpClass);
+        PsiReferenceBase.Immediate reference = new PsiReferenceBase.Immediate(psiElement, (action.isEmpty() ? phpClass : classMethod));
         return new PsiReference[]{reference};
     }
 
-    private String sanitizeController(String controller) {
+    private String extractController(String controller) {
+        if (controller.contains("#")) {
+            controller = controller.split("#")[0];
+        }
         return "Controller\\" + prepareNamespace(underscoreToCamelCase(controller)) + "Controller";
     }
 
@@ -43,6 +49,13 @@ public abstract class ControllerActionReferenceProvider extends PsiReferenceProv
 
     private String prepareNamespace(String s) {
         return s.replace('/', '\\');
+    }
+
+    private String extractAction(String action) {
+        if (action.contains("#")) {
+            return action.split("#")[1];
+        }
+        return "";
     }
 
     protected abstract boolean isApplicable(PsiElement psiElement);

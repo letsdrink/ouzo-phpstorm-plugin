@@ -81,4 +81,20 @@ public class OuzoUtils {
     public static Method getRouteResourceMethod(Project project) {
         return PhpIndexUtils.getClassMethod(project, "Ouzo\\Routing\\Route", "resource");
     }
+
+    public static Method getRouteGetMethod(Project project) {
+        return PhpIndexUtils.getClassMethod(project, "Ouzo\\Routing\\Route", "get");
+    }
+
+    public static Method getRoutePostMethod(Project project) {
+        return PhpIndexUtils.getClassMethod(project, "Ouzo\\Routing\\Route", "post");
+    }
+
+    public static Method getRouteDeleteMethod(Project project) {
+        return PhpIndexUtils.getClassMethod(project, "Ouzo\\Routing\\Route", "delete");
+    }
+
+    public static Method getRoutePutMethod(Project project) {
+        return PhpIndexUtils.getClassMethod(project, "Ouzo\\Routing\\Route", "put");
+    }
 }
