@@ -19,7 +19,8 @@ public class PsiUtils {
         }
 
         if (value instanceof ConstantReferenceImpl) {
-            return getContent(((ConstantReferenceImpl) value).resolve().getChildren()[1]);
+            int valueIndex = 1;
+            return getContent(((ConstantReferenceImpl) value).resolve().getChildren()[valueIndex]);
         }
         return null;
     }
