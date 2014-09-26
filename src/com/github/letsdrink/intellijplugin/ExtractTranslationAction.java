@@ -1,7 +1,6 @@
 package com.github.letsdrink.intellijplugin;
 
 import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -59,11 +58,11 @@ public class ExtractTranslationAction extends AnAction {
         List<PsiFile> translationFiles = TranslationUtils.getTranslationFiles(project);
         final List<TranslationParser> translationParsers = Lists.transform(translationFiles, TranslationParser.createParser());
 
-        String key = FluentIterable.from(translationParsers).transform(TranslationParser.getKeyFunction(text)).filter(Predicates.notNull()).first().or("");
+        List<String> keys = FluentIterable.from(translationParsers).transformAndConcat(TranslationParser.getKeysFunction(text)).toList();
 
-        final Map<String, String> translations = createTranslationsMap(translationParsers, key, text);
+        final Map<String, String> translations = createTranslationsMap(translationParsers, Iterables.getFirst(keys, ""), text);
 
-        TranslationDialog dialog = new TranslationDialog(key, translations, new TranslationDialog.OkCallback() {
+        TranslationDialog dialog = new TranslationDialog(keys, translations, new TranslationDialog.OkCallback() {
             @Override
             public void onClick(final String key, Map<String, String> translations) {
                 replaceTextWithTranslation(key, finalPsiElement, editor);

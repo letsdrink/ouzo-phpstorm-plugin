@@ -6,7 +6,10 @@ import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
 import java.awt.event.*;
+import java.util.List;
 import java.util.Map;
+
+import static java.util.Arrays.asList;
 
 public class TranslationDialog extends JDialog {
     private final OkCallback okCallback;
@@ -22,17 +25,22 @@ public class TranslationDialog extends JDialog {
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
-    private JTextField key;
     private TranslationsEditor translations;
+    private JComboBox key;
 
-    public TranslationDialog(String keyText, Map<String, String> translationsMap, OkCallback okCallback) {
+    public TranslationDialog(List<String> keyTexts, Map<String, String> translationsMap, OkCallback okCallback) {
         this.okCallback = okCallback;
         translations.initialize(translationsMap);
 
         setContentPane(contentPane);
         setModal(true);
 
-        key.setText(keyText);
+        key.setEditable(true);
+        key.setModel(new DefaultComboBoxModel<String>(keyTexts.toArray(new String[0])));
+        if (!keyTexts.isEmpty()) {
+            key.setSelectedIndex(0);
+        }
+
         getRootPane().setDefaultButton(buttonOK);
 
         buttonOK.addActionListener(new ActionListener() {
@@ -64,7 +72,7 @@ public class TranslationDialog extends JDialog {
     }
 
     private void onOK() {
-        String keyText = key.getText();
+        String keyText = (String)key.getSelectedItem();
         if (StringUtils.isBlank(keyText)) {
             return;
         }
@@ -78,7 +86,7 @@ public class TranslationDialog extends JDialog {
     }
 
     public static void main(String[] args) {
-        TranslationDialog dialog = new TranslationDialog("test", ImmutableMap.of("en", "asd"), new OkCallback() {
+        TranslationDialog dialog = new TranslationDialog(asList("test"), ImmutableMap.of("en", "asd"), new OkCallback() {
             @Override
             public void onClick(final String key, Map<String, String> translations) {
             }

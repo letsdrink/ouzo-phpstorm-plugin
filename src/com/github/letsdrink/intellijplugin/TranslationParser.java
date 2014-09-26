@@ -54,12 +54,12 @@ public class TranslationParser {
         };
     }
 
-    public static Function<TranslationParser, String> getKeyFunction(final String text) {
-        return new Function<TranslationParser, String>() {
+    public static Function<TranslationParser, List<String>> getKeysFunction(final String text) {
+        return new Function<TranslationParser, List<String>>() {
             @Nullable
             @Override
-            public String apply(@Nullable TranslationParser translationParser) {
-                return translationParser.getKey(text);
+            public List<String> apply(@Nullable TranslationParser translationParser) {
+                return translationParser.getKeys(text);
             }
         };
     }
@@ -78,17 +78,18 @@ public class TranslationParser {
         return psiFile.getName().replaceFirst(".php", "");
     }
 
-    public String getKey(String translation) {
+    public List<String> getKeys(String translation) {
+        List<String> results = new ArrayList<String>();
         Collection<ArrayHashElement> hashElements = PsiTreeUtil.collectElementsOfType(psiFile, ArrayHashElement.class);
         for (ArrayHashElement hashElement : hashElements) {
             PhpPsiElement value = hashElement.getValue();
             if (PlatformPatterns.psiElement(PhpElementTypes.STRING).accepts(value)) {
                 if (translation.equals(getContent(value))) {
-                    return getKey(hashElement);
+                    results.add(getKey(hashElement));
                 }
             }
         }
-        return null;
+        return results;
     }
 
     public ArrayHashElement getTranslationElement(String key) {
