@@ -109,7 +109,7 @@ public class TranslationParser {
         return translationElement != null ? getContent(translationElement.getValue()) : null;
     }
 
-    private String getKey(ArrayHashElement hashElement) {
+    public String getKey(ArrayHashElement hashElement) {
         LinkedList<String> keys = new LinkedList<String>();
         keys.add(getContent(hashElement.getKey()));
 

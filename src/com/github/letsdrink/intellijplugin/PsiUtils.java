@@ -5,13 +5,23 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiReference;
 import com.jetbrains.php.lang.psi.elements.*;
+import com.jetbrains.php.lang.psi.elements.impl.ConstantReferenceImpl;
+import com.jetbrains.php.lang.psi.elements.impl.PhpExpressionImpl;
+import com.jetbrains.php.lang.psi.resolve.types.PhpType;
 
 public class PsiUtils {
     public static String getContent(PsiElement value) {
-        if (!(value instanceof StringLiteralExpression)) {
-            return null;
+        if (value instanceof StringLiteralExpression) {
+            return ((StringLiteralExpression) value).getContents();
         }
-        return ((StringLiteralExpression) value).getContents();
+        if (value instanceof PhpExpressionImpl && ((PhpExpressionImpl) value).getType().equals(PhpType.INT)) {
+            return value.getText();
+        }
+
+        if (value instanceof ConstantReferenceImpl) {
+            return getContent(((ConstantReferenceImpl) value).resolve().getChildren()[1]);
+        }
+        return null;
     }
 
     public static boolean isElementTheFirstParameterInFunctionCall(PsiElement psiElement, String functionName) {

@@ -20,6 +20,7 @@
     <li>References for views</li>
     <li>References for partials</li>
     <li>Navigation from Controllers actions to corresponding views (with 'Go To/Ouzo View' and 'Navigate/Related symbol' (Ctrl+Alt+Home))</li>
+    <li>Show unused translations</li>
 </ul>
     ]]></description>
 
@@ -39,6 +40,9 @@
         <projectService serviceImplementation="com.github.letsdrink.intellijplugin.Settings"/>
 
         <gotoRelatedProvider implementation="com.github.letsdrink.intellijplugin.PhpGoToRelatedProvider"/>
+
+        <fileBasedIndex implementation="com.github.letsdrink.intellijplugin.index.TranslationCallIndex"/>
+        <externalAnnotator language="PHP" implementationClass="com.github.letsdrink.intellijplugin.UnusedTranslationAnnotator"/>
     </extensions>
 
     <depends>com.jetbrains.php</depends>
