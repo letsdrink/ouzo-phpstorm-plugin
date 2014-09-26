@@ -71,18 +71,33 @@ public class PsiUtils {
         return isMethodCallTo(methodReference, method);
     }
 
-    public static boolean isMethodCallTo(MethodReference methodReference, Method method) {
+    public static Method resolveMethod(MethodReference methodReference) {
         PsiReference psiReference = methodReference.getReference();
         if (psiReference == null) {
-            return false;
+            return null;
         }
 
         PsiElement resolvedReference = psiReference.resolve();
         if (!(resolvedReference instanceof Method)) {
+            return null;
+        }
+        return (Method) resolvedReference;
+    }
+
+    public static boolean isMethodCallTo(MethodReference methodReference, Method method) {
+        Method currentMethod = resolveMethod(methodReference);
+        if (currentMethod == null) {
             return false;
         }
-        Method currentMethod = (Method) resolvedReference;
         return currentMethod.equals(method);
+    }
+
+    public static boolean isMethodCallTo(MethodReference methodReference, String name) {
+        Method currentMethod = resolveMethod(methodReference);
+        if (currentMethod == null) {
+            return false;
+        }
+        return currentMethod.getFQN().equals(name);
     }
 
     public static PsiElement getCurrentElement(Editor editor, PsiFile psiFile) {

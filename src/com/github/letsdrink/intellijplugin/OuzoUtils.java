@@ -101,4 +101,8 @@ public class OuzoUtils {
     public static boolean isExpectedFile(PsiElement psiElement, String filename) {
         return PsiUtils.getContainingFilename(psiElement).equals(filename);
     }
+
+    public static Method getI18nLabelsMethod(Project project) {
+        return PhpIndexUtils.getClassMethod(project, "Ouzo\\I18n", "labels");
+    }
 }

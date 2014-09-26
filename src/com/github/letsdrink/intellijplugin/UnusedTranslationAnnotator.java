@@ -2,6 +2,9 @@ package com.github.letsdrink.intellijplugin;
 
 
 import com.github.letsdrink.intellijplugin.index.TranslationCallIndex;
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Iterables;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.ExternalAnnotator;
 import com.intellij.openapi.project.Project;
@@ -44,7 +47,7 @@ public class UnusedTranslationAnnotator extends ExternalAnnotator<UnusedTranslat
         }
 
         Project project = file.getProject();
-        final FileBasedIndex fbi = FileBasedIndex.getInstance();
+        FileBasedIndex index = FileBasedIndex.getInstance();
         Collection<ArrayHashElement> hashElements = PsiTreeUtil.collectElementsOfType(file, ArrayHashElement.class);
         TranslationParser translationParser = new TranslationParser(file);
 
@@ -52,14 +55,29 @@ public class UnusedTranslationAnnotator extends ExternalAnnotator<UnusedTranslat
         for (ArrayHashElement hashElement : hashElements) {
             if (!PlatformPatterns.psiElement(PhpElementTypes.ARRAY_CREATION_EXPRESSION).accepts(hashElement.getValue())) {
                 String key = translationParser.getKey(hashElement);
-
-                Collection<VirtualFile> files = fbi.getContainingFiles(TranslationCallIndex.KEY, key, GlobalSearchScope.allScope(project));
-                if (files.isEmpty()) {
+                if (!isUsed(project, index, key)) {
                     unusedKeys.add(hashElement.getKey());
                 }
             }
         }
         return new UnusedTranslations(unusedKeys);
+    }
+
+    private boolean isUsed(Project project, FileBasedIndex index, String key) {
+        if (key == null) {
+            return false;
+        }
+        Collection<VirtualFile> files = index.getContainingFiles(TranslationCallIndex.KEY, key, GlobalSearchScope.allScope(project));
+
+        return !files.isEmpty() || isUsed(project, index, getParentKey(key));
+    }
+
+    private String getParentKey(String key) {
+        List<String> parts = Splitter.on(".").splitToList(key);
+        if (parts.size() == 1) {
+            return null;
+        }
+        return Joiner.on(".").join(Iterables.limit(parts, parts.size() - 1));
     }
 
     @Nullable
