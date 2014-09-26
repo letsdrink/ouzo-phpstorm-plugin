@@ -23,6 +23,13 @@ import java.util.Collections;
 import java.util.List;
 
 public class OuzoUtils {
+    public static final String OUZO_VIEW_RENDER_FQN = "\\Ouzo\\View.render";
+    public static final String OUZO_ROUTE_RESOURCE_FQN = "\\Ouzo\\Routing\\Route.resource";
+    public static final String OUZO_ROUTE_GET_FQN = "\\Ouzo\\Routing\\Route.get";
+    public static final String OUZO_ROUTE_POST_FQN = "\\Ouzo\\Routing\\Route.post";
+    public static final String OUZO_ROUTE_DELETE_FQN = "\\Ouzo\\Routing\\Route.delete";
+    public static final String OUZO_ROUTE_PUT_FQN = "\\Ouzo\\Routing\\Route.put";
+
     public static boolean isInViewDir(PsiFile file) {
         VirtualFile ouzoProjectRoot = Settings.getInstance(file.getProject()).getOuzoProjectRoot();
         String relativePath = VfsUtil.getRelativePath(file.getVirtualFile(), ouzoProjectRoot, '/');
@@ -50,10 +57,9 @@ public class OuzoUtils {
 
         Collection<MethodReference> methodCalls = PsiTreeUtil.collectElementsOfType(containingMethod, MethodReference.class);
         Project project = psiElement.getProject();
-        Method renderMethod = OuzoUtils.getOuzoViewRenderMethod(project);
 
         FluentIterable<String> viewNames = FluentIterable.from(methodCalls)
-                .filter(PsiFunctions.isCallTo(renderMethod))
+                .filter(PsiFunctions.isCallTo(OuzoUtils.OUZO_VIEW_RENDER_FQN))
                 .transform(PsiFunctions.extractFirstArgumentStringContent());
 
         String resource = controllerClass.getName().replaceAll("Controller", "");
@@ -74,35 +80,7 @@ public class OuzoUtils {
         };
     }
 
-    public static Method getOuzoViewRenderMethod(Project project) {
-        return PhpIndexUtils.getClassMethod(project, "Ouzo\\View", "render");
-    }
-
-    public static Method getRouteResourceMethod(Project project) {
-        return PhpIndexUtils.getClassMethod(project, "Ouzo\\Routing\\Route", "resource");
-    }
-
-    public static Method getRouteGetMethod(Project project) {
-        return PhpIndexUtils.getClassMethod(project, "Ouzo\\Routing\\Route", "get");
-    }
-
-    public static Method getRoutePostMethod(Project project) {
-        return PhpIndexUtils.getClassMethod(project, "Ouzo\\Routing\\Route", "post");
-    }
-
-    public static Method getRouteDeleteMethod(Project project) {
-        return PhpIndexUtils.getClassMethod(project, "Ouzo\\Routing\\Route", "delete");
-    }
-
-    public static Method getRoutePutMethod(Project project) {
-        return PhpIndexUtils.getClassMethod(project, "Ouzo\\Routing\\Route", "put");
-    }
-
     public static boolean isExpectedFile(PsiElement psiElement, String filename) {
         return PsiUtils.getContainingFilename(psiElement).equals(filename);
-    }
-
-    public static Method getI18nLabelsMethod(Project project) {
-        return PhpIndexUtils.getClassMethod(project, "Ouzo\\I18n", "labels");
     }
 }

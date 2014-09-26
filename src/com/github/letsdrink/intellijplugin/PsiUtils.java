@@ -43,7 +43,7 @@ public class PsiUtils {
         return false;
     }
 
-    public static boolean isElementTheFirstParameterInMethodCall(PsiElement psiElement, Method method) {
+    public static boolean isElementTheFirstParameterInMethodCall(PsiElement psiElement, String methodFQN) {
         if (!(psiElement.getContext() instanceof ParameterList)) {
             return false;
         }
@@ -59,16 +59,16 @@ public class PsiUtils {
             return false;
         }
 
-        return isMethodCallTo(methodReference, method);
+        return isMethodCallTo(methodReference, methodFQN);
     }
 
-    public static boolean isElementTheNthParameterInMethodCall(PsiElement psiElement, Method method, int n) {
+    public static boolean isElementTheNthParameterInMethodCall(PsiElement psiElement, String methodFQN, int n) {
         ParameterList parameterList = (ParameterList) psiElement.getContext();
         MethodReference methodReference = (MethodReference) parameterList.getContext();
         if (!methodReference.getParameters()[n].equals(psiElement)) {
             return false;
         }
-        return isMethodCallTo(methodReference, method);
+        return isMethodCallTo(methodReference, methodFQN);
     }
 
     public static Method resolveMethod(MethodReference methodReference) {
@@ -82,14 +82,6 @@ public class PsiUtils {
             return null;
         }
         return (Method) resolvedReference;
-    }
-
-    public static boolean isMethodCallTo(MethodReference methodReference, Method method) {
-        Method currentMethod = resolveMethod(methodReference);
-        if (currentMethod == null) {
-            return false;
-        }
-        return currentMethod.equals(method);
     }
 
     public static boolean isMethodCallTo(MethodReference methodReference, String name) {

@@ -4,11 +4,11 @@ import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReferenceContributor;
 import com.intellij.psi.PsiReferenceRegistrar;
-import com.jetbrains.php.lang.psi.elements.Method;
 import com.jetbrains.php.lang.psi.elements.StringLiteralExpression;
 import org.jetbrains.annotations.NotNull;
 
 public class ControllerPsiReferenceContributor extends PsiReferenceContributor {
+
     @Override
     public void registerReferenceProviders(@NotNull PsiReferenceRegistrar psiReferenceRegistrar) {
         psiReferenceRegistrar.registerReferenceProvider(PlatformPatterns.psiElement(StringLiteralExpression.class), new ControllerActionReferenceProvider() {
@@ -18,17 +18,11 @@ public class ControllerPsiReferenceContributor extends PsiReferenceContributor {
                     return false;
                 }
 
-                Method resourceMethod = OuzoUtils.getRouteResourceMethod(psiElement.getProject());
-                Method getMethod = OuzoUtils.getRouteGetMethod(psiElement.getProject());
-                Method postMethod = OuzoUtils.getRoutePostMethod(psiElement.getProject());
-                Method deleteMethod = OuzoUtils.getRouteDeleteMethod(psiElement.getProject());
-                Method putMethod = OuzoUtils.getRoutePutMethod(psiElement.getProject());
-
-                return PsiUtils.isElementTheFirstParameterInMethodCall(psiElement, resourceMethod) ||
-                        PsiUtils.isElementTheNthParameterInMethodCall(psiElement, getMethod, 1) ||
-                        PsiUtils.isElementTheNthParameterInMethodCall(psiElement, postMethod, 1) ||
-                        PsiUtils.isElementTheNthParameterInMethodCall(psiElement, deleteMethod, 1) ||
-                        PsiUtils.isElementTheNthParameterInMethodCall(psiElement, putMethod, 1);
+                return PsiUtils.isElementTheFirstParameterInMethodCall(psiElement, OuzoUtils.OUZO_ROUTE_RESOURCE_FQN) ||
+                        PsiUtils.isElementTheNthParameterInMethodCall(psiElement, OuzoUtils.OUZO_ROUTE_GET_FQN, 1) ||
+                        PsiUtils.isElementTheNthParameterInMethodCall(psiElement, OuzoUtils.OUZO_ROUTE_POST_FQN, 1) ||
+                        PsiUtils.isElementTheNthParameterInMethodCall(psiElement, OuzoUtils.OUZO_ROUTE_DELETE_FQN, 1) ||
+                        PsiUtils.isElementTheNthParameterInMethodCall(psiElement, OuzoUtils.OUZO_ROUTE_PUT_FQN, 1);
             }
         });
     }

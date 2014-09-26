@@ -3,17 +3,16 @@ package com.github.letsdrink.intellijplugin;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.intellij.psi.PsiElement;
-import com.jetbrains.php.lang.psi.elements.Method;
 import com.jetbrains.php.lang.psi.elements.MethodReference;
 
 import javax.annotation.Nullable;
 
 public class PsiFunctions {
-    public static Predicate<MethodReference> isCallTo(final Method method) {
+    public static Predicate<MethodReference> isCallTo(final String methodFQN) {
         return new Predicate<MethodReference>() {
             @Override
             public boolean apply(@Nullable MethodReference methodReference) {
-                return PsiUtils.isMethodCallTo(methodReference, method);
+                return PsiUtils.isMethodCallTo(methodReference, methodFQN);
             }
         };
     }
