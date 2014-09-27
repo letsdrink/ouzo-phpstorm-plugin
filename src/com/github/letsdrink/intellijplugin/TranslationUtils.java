@@ -1,6 +1,9 @@
 package com.github.letsdrink.intellijplugin;
 
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Iterables;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -23,5 +26,24 @@ public class TranslationUtils {
             }
         }
         return translationFiles;
+    }
+
+    public static boolean isParent(String parent, String key) {
+        if (!key.startsWith(parent)) {
+            return false;
+        }
+        return key.charAt(parent.length()) == '.';
+    }
+
+    static String getParentKey(String key) {
+        List<String> parts = Splitter.on(".").splitToList(key);
+        if (parts.size() == 1) {
+            return null;
+        }
+        return Joiner.on(".").join(Iterables.limit(parts, parts.size() - 1));
+    }
+
+    static boolean isTranslationFile(PsiFile file) {
+        return file.getParent().getName().equals("locales");
     }
 }

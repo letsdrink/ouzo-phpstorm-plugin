@@ -2,9 +2,6 @@ package com.github.letsdrink.intellijplugin;
 
 
 import com.github.letsdrink.intellijplugin.index.TranslationCallIndex;
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.collect.Iterables;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.ExternalAnnotator;
 import com.intellij.openapi.project.Project;
@@ -42,7 +39,7 @@ public class UnusedTranslationAnnotator extends ExternalAnnotator<UnusedTranslat
     @Nullable
     @Override
     public UnusedTranslations collectInformation(@NotNull PsiFile file) {
-        if (!isTranslationFile(file)) {
+        if (!TranslationUtils.isTranslationFile(file)) {
             return UnusedTranslations.EMPTY;
         }
 
@@ -69,25 +66,13 @@ public class UnusedTranslationAnnotator extends ExternalAnnotator<UnusedTranslat
         }
         Collection<VirtualFile> files = index.getContainingFiles(TranslationCallIndex.KEY, key, GlobalSearchScope.allScope(project));
 
-        return !files.isEmpty() || isUsed(project, index, getParentKey(key));
-    }
-
-    private String getParentKey(String key) {
-        List<String> parts = Splitter.on(".").splitToList(key);
-        if (parts.size() == 1) {
-            return null;
-        }
-        return Joiner.on(".").join(Iterables.limit(parts, parts.size() - 1));
+        return !files.isEmpty() || isUsed(project, index, TranslationUtils.getParentKey(key));
     }
 
     @Nullable
     @Override
     public UnusedTranslations doAnnotate(UnusedTranslations collectedInfo) {
         return collectedInfo;
-    }
-
-    private static boolean isTranslationFile(PsiFile file) {
-        return file.getParent().getName().equals("locales");
     }
 
     @Override

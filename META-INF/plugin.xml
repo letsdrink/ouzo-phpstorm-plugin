@@ -58,5 +58,10 @@
             <add-to-group group-id="GoToTargetEx"/>
             <add-to-group group-id="EditorPopupMenu.GoTo"/>
         </action>
+
+        <action id="TranslationUsages" class="com.github.letsdrink.intellijplugin.TranslationUsagesAction"
+                text="Show translation usages" description="Show all usages of a translation key">
+            <add-to-group group-id="FindMenuGroup" anchor="last"/>
+        </action>
     </actions>
 </idea-plugin>
