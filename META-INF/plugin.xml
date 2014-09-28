@@ -20,7 +20,8 @@
     <li>References for views</li>
     <li>References for partials</li>
     <li>Navigation from Controllers actions to corresponding views (with 'Go To/Ouzo View' and 'Navigate/Related symbol' (Ctrl+Alt+Home))</li>
-    <li>Show unused translations</li>
+    <li>Annotate unused translations</li>
+    <li>Show all usages of a translation key (Edit/Find/Show translation usages)</li>
 </ul>
     ]]></description>
 
