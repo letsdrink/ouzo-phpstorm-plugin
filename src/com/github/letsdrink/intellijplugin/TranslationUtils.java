@@ -7,8 +7,13 @@ import com.google.common.collect.Iterables;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VfsUtil;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.patterns.PlatformPatterns;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
+import com.jetbrains.php.lang.parser.PhpElementTypes;
+import com.jetbrains.php.lang.psi.elements.BinaryExpression;
+import com.jetbrains.php.lang.psi.elements.FunctionReference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +40,7 @@ public class TranslationUtils {
         return key.charAt(parent.length()) == '.';
     }
 
-    static String getParentKey(String key) {
+    public static String getParentKey(String key) {
         List<String> parts = Splitter.on(".").splitToList(key);
         if (parts.size() == 1) {
             return null;
@@ -43,7 +48,21 @@ public class TranslationUtils {
         return Joiner.on(".").join(Iterables.limit(parts, parts.size() - 1));
     }
 
-    static boolean isTranslationFile(PsiFile file) {
+    public static boolean isTranslationFile(PsiFile file) {
         return file.getParent().getName().equals("locales");
+    }
+
+    public static boolean isTranslationCall(FunctionReference call) {
+        return call.getParameters().length > 0 && (call.getName().equals("t") || call.getText().startsWith("I18n::labels"));
+    }
+
+    public static PsiElement extractKey(FunctionReference translationCall) {
+        PsiElement parameter = translationCall.getParameters()[0];
+
+        if (PlatformPatterns.psiElement(PhpElementTypes.CONCATENATION_EXPRESSION).accepts(parameter)) {
+            BinaryExpression binaryExpression = (BinaryExpression) parameter;
+            parameter = binaryExpression.getLeftOperand();
+        }
+        return parameter;
     }
 }

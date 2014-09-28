@@ -10,17 +10,12 @@ import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectUtil;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.usageView.UsageInfo;
 import com.intellij.util.indexing.FileBasedIndex;
-import com.jetbrains.php.lang.parser.PhpElementTypes;
-import com.jetbrains.php.lang.psi.elements.BinaryExpression;
-import com.jetbrains.php.lang.psi.elements.FunctionReference;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -102,22 +97,15 @@ public class TranslationUsagesFinder {
         };
     }
 
-    public void map(@NotNull PsiFile file, Set<PsiElement> processed) {
-        Collection<FunctionReference> calls = PsiTreeUtil.collectElementsOfType(file, FunctionReference.class);
-        for (FunctionReference call : calls) {
-            if (call.getParameters().length > 0 && (call.getName().equals("t") || call.getText().startsWith("I18n::labels"))) {
-                addKey(processed, call.getParameters()[0]);
+    public void map(@NotNull PsiFile file, final Set<PsiElement> translationKeys) {
+        TranslationCallParser translationCallParser = new TranslationCallParser();
+        translationCallParser.parse(file, new TranslationCallParser.TranslationCallHandler() {
+            @Override
+            public void handleKey(String key, PsiElement keyElement) {
+                if (searchedKey.equals(key) || TranslationUtils.isParent(key, searchedKey)) {
+                    translationKeys.add(keyElement);
+                }
             }
-        }
-    }
-
-    private void addKey(Set<PsiElement> map, PsiElement parameter) {
-        String key = PsiUtils.getContent(parameter);
-        if (key != null && (searchedKey.equals(key) || TranslationUtils.isParent(key, searchedKey))) {
-            map.add(parameter);
-        } else if (PlatformPatterns.psiElement(PhpElementTypes.CONCATENATION_EXPRESSION).accepts(parameter)) {
-            BinaryExpression binaryExpression = (BinaryExpression) parameter;
-            addKey(map, binaryExpression.getLeftOperand());
-        }
+        });
     }
 }

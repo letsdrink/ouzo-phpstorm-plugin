@@ -50,7 +50,7 @@ public class TranslationUsagesAction extends AnAction {
                 .toArray(Usage.class);
 
         final UsageViewPresentation presentation = new UsageViewPresentation();
-        presentation.setTabText("Translation usages");
+        presentation.setTabText("Usages of " + key);
         presentation.setUsagesString(RefactoringBundle.message("usageView.usagesText"));
         presentation.setScopeText("Project");
         UsageViewManager.getInstance(project).showUsages(UsageTarget.EMPTY_ARRAY, usages, presentation, rerunFactory(project, translationUsagesFinder));
