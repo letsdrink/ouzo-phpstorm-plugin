@@ -1,5 +1,6 @@
 package com.github.letsdrink.intellijplugin;
 
+import com.github.letsdrink.intellijplugin.index.TranslationCallIndex;
 import com.google.common.base.Function;
 import com.google.common.collect.FluentIterable;
 import com.intellij.analysis.AnalysisScope;
@@ -13,8 +14,10 @@ import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.usageView.UsageInfo;
+import com.intellij.util.indexing.FileBasedIndex;
 import com.jetbrains.php.lang.parser.PhpElementTypes;
 import com.jetbrains.php.lang.psi.elements.BinaryExpression;
 import com.jetbrains.php.lang.psi.elements.FunctionReference;
@@ -35,7 +38,9 @@ public class TranslationUsagesFinder {
     public UsageInfo[] findUsages(final Project project) {
         final ProgressManager progressManager = ProgressManager.getInstance();
 
-        final AnalysisScope scope = new AnalysisScope(project);
+        Collection<VirtualFile> files = getFilesToSearch(project);
+
+        final AnalysisScope scope = new AnalysisScope(project, files);
 
         final int totalFiles = scope.getFileCount();
         final Set<PsiElement> processed = new HashSet<PsiElement>();
@@ -64,7 +69,7 @@ public class TranslationUsagesFinder {
         };
 
         if (ApplicationManager.getApplication().isDispatchThread()) {
-            if (!progressManager.runProcessWithProgressSynchronously(searchRunner, "Searching usages of " +  searchedKey + " ...", true, project)) {
+            if (!progressManager.runProcessWithProgressSynchronously(searchRunner, "Searching usages of " + searchedKey + " ...", true, project)) {
                 return null;
             }
         } else {
@@ -72,6 +77,19 @@ public class TranslationUsagesFinder {
         }
 
         return FluentIterable.from(processed).transform(toUsageInfo()).toArray(UsageInfo.class);
+    }
+
+    private Collection<VirtualFile> getFilesToSearch(Project project) {
+        FileBasedIndex index = FileBasedIndex.getInstance();
+
+        Collection<VirtualFile> files = new HashSet<>();
+        String key = searchedKey;
+
+        while (key != null) {
+            files.addAll(index.getContainingFiles(TranslationCallIndex.KEY, key, GlobalSearchScope.allScope(project)));
+            key = TranslationUtils.getParentKey(key);
+        }
+        return files;
     }
 
     private Function<PsiElement, UsageInfo> toUsageInfo() {
