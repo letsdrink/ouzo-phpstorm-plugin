@@ -31,6 +31,8 @@ import java.util.Map;
 import static java.util.Arrays.asList;
 
 public class ExtractTranslationAction extends AnAction {
+    private static String lastKeyPrefix;
+
     public ExtractTranslationAction() {
         super("ExtractTranslation");
     }
@@ -49,23 +51,24 @@ public class ExtractTranslationAction extends AnAction {
             psiElement = psiElement.getParent();
         }
 
-        final PsiElement finalPsiElement = psiElement;
+        final PsiElement textPsiElement = psiElement;
 
-        final String text = getTextToTranslate(finalPsiElement);
+        final String text = getTextToTranslate(textPsiElement);
 
-        final Project project = finalPsiElement.getProject();
+        final Project project = textPsiElement.getProject();
 
         List<PsiFile> translationFiles = TranslationUtils.getTranslationFiles(project);
         final List<TranslationParser> translationParsers = Lists.transform(translationFiles, TranslationParser.createParser());
 
-        List<String> keys = FluentIterable.from(translationParsers).transformAndConcat(TranslationParser.getKeysFunction(text)).toList();
+        List<String> keys = getKeys(translationParsers, text);
 
         final Map<String, String> translations = createTranslationsMap(translationParsers, Iterables.getFirst(keys, ""), text);
 
         TranslationDialog dialog = new TranslationDialog(keys, translations, new TranslationDialog.OkCallback() {
             @Override
             public void onClick(final String key, Map<String, String> translations) {
-                replaceTextWithTranslation(key, finalPsiElement, editor);
+                lastKeyPrefix = TranslationUtils.getParentKey(key);
+                replaceTextWithTranslation(key, textPsiElement, editor);
                 for (Map.Entry<String, String> entry : translations.entrySet()) {
                     TranslationParser parser = Iterables.find(translationParsers, TranslationParser.languageEqualsFunction(entry.getKey()));
                     parser.addTranslation(key, entry.getValue());
@@ -77,6 +80,16 @@ public class ExtractTranslationAction extends AnAction {
         dialog.setSize(470, 200);
         dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);
+    }
+
+    private List<String> getKeys(List<TranslationParser> translationParsers, String text) {
+        List<String> keys = Lists.newArrayList(FluentIterable.from(translationParsers)
+                .transformAndConcat(TranslationParser.getKeysFunction(text)));
+
+        if (lastKeyPrefix != null) {
+            keys.add(lastKeyPrefix + ".");
+        }
+        return keys;
     }
 
     private Predicate<PsiElement> isSupportedPredicate() {

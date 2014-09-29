@@ -73,7 +73,7 @@ public class TranslationDialog extends JDialog {
 
     private void onOK() {
         String keyText = (String)key.getSelectedItem();
-        if (StringUtils.isBlank(keyText)) {
+        if (StringUtils.isBlank(keyText) || keyText.endsWith(".")) {
             return;
         }
         okCallback.onClick(keyText, translations.getTranslations());
