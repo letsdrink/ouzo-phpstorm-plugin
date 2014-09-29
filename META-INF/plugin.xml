@@ -44,6 +44,7 @@
 
         <fileBasedIndex implementation="com.github.letsdrink.intellijplugin.index.TranslationCallIndex"/>
         <externalAnnotator language="PHP" implementationClass="com.github.letsdrink.intellijplugin.UnusedTranslationAnnotator"/>
+        <annotator language="PHP" implementationClass="com.github.letsdrink.intellijplugin.InvalidTranslationAnnotator"/>
     </extensions>
 
     <depends>com.jetbrains.php</depends>
