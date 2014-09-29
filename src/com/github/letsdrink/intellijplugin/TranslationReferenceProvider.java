@@ -21,7 +21,9 @@ class TranslationReferenceProvider extends PsiReferenceProvider {
             return new PsiReference[0];
         }
         String key = PsiUtils.getContent(psiElement);
-
+        if (key == null) {
+            return new PsiReference[0];
+        }
         return FluentIterable.from(TranslationUtils.getTranslationFiles(psiElement.getProject()))
                 .transform(TranslationParser.createParser())
                 .transform(TranslationParser.getTranslationElementFunction(key))

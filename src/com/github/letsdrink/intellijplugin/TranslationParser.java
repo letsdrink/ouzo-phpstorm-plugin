@@ -182,6 +182,9 @@ public class TranslationParser {
         return new Predicate<PsiElement>() {
             @Override
             public boolean apply(@Nullable PsiElement element) {
+                if (!(element instanceof ArrayHashElement)) {
+                    return false;
+                }
                 ArrayHashElement hashElement = (ArrayHashElement) element;
                 PsiElement stringElement = hashElement.getKey();
                 return keyPart.equals(getContent(stringElement));

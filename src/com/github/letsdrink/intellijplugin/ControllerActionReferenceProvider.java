@@ -1,5 +1,6 @@
 package com.github.letsdrink.intellijplugin;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Iterables;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
@@ -15,7 +16,20 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 
-public abstract class ControllerActionReferenceProvider extends PsiReferenceProvider {
+
+class ControllerActionReferenceProvider extends PsiReferenceProvider {
+    private boolean isApplicable(PsiElement psiElement) {
+        if (!OuzoUtils.isExpectedFile(psiElement, "routes.php")) {
+            return false;
+        }
+
+        return PsiUtils.isElementTheFirstParameterInMethodCall(psiElement, OuzoUtils.OUZO_ROUTE_RESOURCE_FQN) ||
+                PsiUtils.isElementTheNthParameterInMethodCall(psiElement, OuzoUtils.OUZO_ROUTE_GET_FQN, 1) ||
+                PsiUtils.isElementTheNthParameterInMethodCall(psiElement, OuzoUtils.OUZO_ROUTE_POST_FQN, 1) ||
+                PsiUtils.isElementTheNthParameterInMethodCall(psiElement, OuzoUtils.OUZO_ROUTE_DELETE_FQN, 1) ||
+                PsiUtils.isElementTheNthParameterInMethodCall(psiElement, OuzoUtils.OUZO_ROUTE_PUT_FQN, 1);
+    }
+
     @NotNull
     @Override
     public PsiReference[] getReferencesByElement(@NotNull PsiElement psiElement, @NotNull ProcessingContext processingContext) {
@@ -29,9 +43,9 @@ public abstract class ControllerActionReferenceProvider extends PsiReferenceProv
         Collection<PhpClass> phpClasses = phpIndex.getClassesByFQN(controller);
 
         PhpClass phpClass = Iterables.getLast(phpClasses, null);
-        Method classMethod = PhpIndexUtils.getClassMethod(psiElement.getProject(), controller, action);
+        Optional<Method> classMethod = PhpIndexUtils.getClassMethod(phpClass, action);
 
-        PsiReferenceBase.Immediate reference = new PsiReferenceBase.Immediate(psiElement, (action.isEmpty() ? phpClass : classMethod));
+        PsiReferenceBase.Immediate reference = new PsiReferenceBase.Immediate(psiElement, classMethod.isPresent() ? classMethod.get() : phpClass);
         return new PsiReference[]{reference};
     }
 
@@ -56,6 +70,4 @@ public abstract class ControllerActionReferenceProvider extends PsiReferenceProv
         }
         return "";
     }
-
-    protected abstract boolean isApplicable(PsiElement psiElement);
 }

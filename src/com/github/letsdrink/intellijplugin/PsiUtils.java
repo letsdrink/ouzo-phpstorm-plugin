@@ -64,9 +64,13 @@ public class PsiUtils {
     }
 
     public static boolean isElementTheNthParameterInMethodCall(PsiElement psiElement, String methodFQN, int n) {
+        if (!(psiElement.getContext() instanceof ParameterList)) {
+            return false;
+        }
         ParameterList parameterList = (ParameterList) psiElement.getContext();
         MethodReference methodReference = (MethodReference) parameterList.getContext();
-        if (!methodReference.getParameters()[n].equals(psiElement)) {
+        PsiElement[] parameters = methodReference.getParameters();
+        if (parameters.length > n && !parameters[n].equals(psiElement)) {
             return false;
         }
         return isMethodCallTo(methodReference, methodFQN);
