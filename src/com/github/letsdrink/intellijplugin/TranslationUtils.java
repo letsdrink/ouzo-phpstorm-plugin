@@ -23,7 +23,11 @@ public class TranslationUtils {
         List<PsiFile> translationFiles = new ArrayList<PsiFile>();
         Settings settings = Settings.getInstance(project);
 
-        VirtualFile[] locales = VfsUtil.getChildren(settings.getOuzoProjectRoot().findChild("locales"));
+        VirtualFile localesPath = settings.getOuzoProjectRoot().findChild("locales");
+        if (localesPath == null) {
+            return translationFiles;
+        }
+        VirtualFile[] locales = VfsUtil.getChildren(localesPath);
 
         for (VirtualFile locale : locales) {
             if ("php".equals(locale.getExtension())) {
@@ -49,7 +53,11 @@ public class TranslationUtils {
     }
 
     public static boolean isTranslationFile(PsiFile file) {
-        return file.getParent().getName().equals("locales");
+        return isTranslationFile(file.getVirtualFile());
+    }
+
+    public static boolean isTranslationFile(VirtualFile virtualFile) {
+        return virtualFile.getParent().getName().equals("locales");
     }
 
     public static boolean isTranslationCall(FunctionReference call) {

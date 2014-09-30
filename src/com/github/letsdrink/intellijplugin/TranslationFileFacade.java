@@ -26,50 +26,50 @@ import java.util.List;
 import static com.github.letsdrink.intellijplugin.PsiUtils.getContent;
 import static java.util.Arrays.asList;
 
-public class TranslationParser {
+public class TranslationFileFacade {
     private final PsiFile psiFile;
     private final TranslationCodeBuilder translationCodeBuilder = new TranslationCodeBuilder();
 
-    public TranslationParser(PsiFile psiFile) {
+    public TranslationFileFacade(PsiFile psiFile) {
         this.psiFile = psiFile;
     }
 
-    public static Function<PsiFile, TranslationParser> createParser() {
-        return new Function<PsiFile, TranslationParser>() {
+    public static Function<PsiFile, TranslationFileFacade> createParser() {
+        return new Function<PsiFile, TranslationFileFacade>() {
             @Nullable
             @Override
-            public TranslationParser apply(@Nullable PsiFile psiFile) {
-                return new TranslationParser(psiFile);
+            public TranslationFileFacade apply(@Nullable PsiFile psiFile) {
+                return new TranslationFileFacade(psiFile);
             }
         };
     }
 
-    public static Predicate<? super TranslationParser> languageEqualsFunction(final String language) {
-        return new Predicate<TranslationParser>() {
+    public static Predicate<? super TranslationFileFacade> languageEqualsFunction(final String language) {
+        return new Predicate<TranslationFileFacade>() {
             @Nullable
             @Override
-            public boolean apply(@Nullable TranslationParser parser) {
+            public boolean apply(@Nullable TranslationFileFacade parser) {
                 return language.equals(parser.getLanguage());
             }
         };
     }
 
-    public static Function<TranslationParser, List<String>> getKeysFunction(final String text) {
-        return new Function<TranslationParser, List<String>>() {
+    public static Function<TranslationFileFacade, List<String>> getKeysFunction(final String text) {
+        return new Function<TranslationFileFacade, List<String>>() {
             @Nullable
             @Override
-            public List<String> apply(@Nullable TranslationParser translationParser) {
-                return translationParser.getKeys(text);
+            public List<String> apply(@Nullable TranslationFileFacade translationFileFacade) {
+                return translationFileFacade.getKeys(text);
             }
         };
     }
 
-    public static Function<TranslationParser, ArrayHashElement> getTranslationElementFunction(final String key) {
-        return new Function<TranslationParser, ArrayHashElement>() {
+    public static Function<TranslationFileFacade, ArrayHashElement> getTranslationElementFunction(final String key) {
+        return new Function<TranslationFileFacade, ArrayHashElement>() {
             @Nullable
             @Override
-            public ArrayHashElement apply(@Nullable TranslationParser translationParser) {
-                return translationParser.getTranslationElement(key);
+            public ArrayHashElement apply(@Nullable TranslationFileFacade translationFileFacade) {
+                return translationFileFacade.getTranslationElement(key);
             }
         };
     }

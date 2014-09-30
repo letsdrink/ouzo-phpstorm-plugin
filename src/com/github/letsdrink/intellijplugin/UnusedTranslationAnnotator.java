@@ -46,12 +46,12 @@ public class UnusedTranslationAnnotator extends ExternalAnnotator<UnusedTranslat
         Project project = file.getProject();
         FileBasedIndex index = FileBasedIndex.getInstance();
         Collection<ArrayHashElement> hashElements = PsiTreeUtil.collectElementsOfType(file, ArrayHashElement.class);
-        TranslationParser translationParser = new TranslationParser(file);
+        TranslationFileFacade translationFileFacade = new TranslationFileFacade(file);
 
         List<PsiElement> unusedKeys = new ArrayList<>();
         for (ArrayHashElement hashElement : hashElements) {
             if (!PlatformPatterns.psiElement(PhpElementTypes.ARRAY_CREATION_EXPRESSION).accepts(hashElement.getValue())) {
-                String key = translationParser.getKey(hashElement);
+                String key = translationFileFacade.getKey(hashElement);
                 if (!isUsed(project, index, key)) {
                     unusedKeys.add(hashElement.getKey());
                 }

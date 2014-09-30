@@ -40,8 +40,8 @@ public class TranslationUsagesAction extends AnAction {
             return;
         }
 
-        TranslationParser translationParser = new TranslationParser(psiFile);
-        String key = translationParser.getKey(hashElement);
+        TranslationFileFacade translationFileFacade = new TranslationFileFacade(psiFile);
+        String key = translationFileFacade.getKey(hashElement);
 
         TranslationUsagesFinder translationUsagesFinder = new TranslationUsagesFinder(key);
         UsageInfo[] usageInfos = translationUsagesFinder.findUsages(project);

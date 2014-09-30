@@ -58,11 +58,11 @@ public class ExtractTranslationAction extends AnAction {
         final Project project = textPsiElement.getProject();
 
         List<PsiFile> translationFiles = TranslationUtils.getTranslationFiles(project);
-        final List<TranslationParser> translationParsers = Lists.transform(translationFiles, TranslationParser.createParser());
+        final List<TranslationFileFacade> translationFileFacades = Lists.transform(translationFiles, TranslationFileFacade.createParser());
 
-        List<String> keys = getKeys(translationParsers, text);
+        List<String> keys = getKeys(translationFileFacades, text);
 
-        final Map<String, String> translations = createTranslationsMap(translationParsers, Iterables.getFirst(keys, ""), text);
+        final Map<String, String> translations = createTranslationsMap(translationFileFacades, Iterables.getFirst(keys, ""), text);
 
         TranslationDialog dialog = new TranslationDialog(keys, translations, new TranslationDialog.OkCallback() {
             @Override
@@ -70,7 +70,7 @@ public class ExtractTranslationAction extends AnAction {
                 lastKeyPrefix = TranslationUtils.getParentKey(key);
                 replaceTextWithTranslation(key, textPsiElement, editor);
                 for (Map.Entry<String, String> entry : translations.entrySet()) {
-                    TranslationParser parser = Iterables.find(translationParsers, TranslationParser.languageEqualsFunction(entry.getKey()));
+                    TranslationFileFacade parser = Iterables.find(translationFileFacades, TranslationFileFacade.languageEqualsFunction(entry.getKey()));
                     parser.addTranslation(key, entry.getValue());
                 }
             }
@@ -82,9 +82,9 @@ public class ExtractTranslationAction extends AnAction {
         dialog.setVisible(true);
     }
 
-    private List<String> getKeys(List<TranslationParser> translationParsers, String text) {
-        List<String> keys = Lists.newArrayList(FluentIterable.from(translationParsers)
-                .transformAndConcat(TranslationParser.getKeysFunction(text)));
+    private List<String> getKeys(List<TranslationFileFacade> translationFileFacades, String text) {
+        List<String> keys = Lists.newArrayList(FluentIterable.from(translationFileFacades)
+                .transformAndConcat(TranslationFileFacade.getKeysFunction(text)));
 
         if (lastKeyPrefix != null) {
             keys.add(lastKeyPrefix + ".");
@@ -101,12 +101,12 @@ public class ExtractTranslationAction extends AnAction {
         };
     }
 
-    private Map<String, String> createTranslationsMap(List<TranslationParser> translationParsers, String key, String text) {
+    private Map<String, String> createTranslationsMap(List<TranslationFileFacade> translationFileFacades, String key, String text) {
         final Map<String, String> translations = new HashMap<String, String>();
-        for (TranslationParser translationParser : translationParsers) {
-            String translation = translationParser.getTranslation(key);
+        for (TranslationFileFacade translationFileFacade : translationFileFacades) {
+            String translation = translationFileFacade.getTranslation(key);
             translation = translation == null ? text : translation;
-            translations.put(translationParser.getLanguage(), translation);
+            translations.put(translationFileFacade.getLanguage(), translation);
         }
         return translations;
     }
