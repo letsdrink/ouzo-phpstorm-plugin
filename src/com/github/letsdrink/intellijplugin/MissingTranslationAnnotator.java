@@ -6,10 +6,13 @@ import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.ExternalAnnotator;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.util.indexing.FileBasedIndex;
+import com.jetbrains.php.lang.parser.PhpElementTypes;
+import com.jetbrains.php.lang.psi.elements.ParameterList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,6 +35,9 @@ public class MissingTranslationAnnotator extends ExternalAnnotator<List<PsiEleme
         translationCallParser.parse(file, new TranslationCallParser.TranslationCallHandler() {
             @Override
             public void handleKey(String key, PsiElement keyElement) {
+                if (!(keyElement.getContext() instanceof ParameterList)) {
+                    return;
+                }
                 Collection<VirtualFile> files = index.getContainingFiles(TranslationKeyIndex.KEY, key, GlobalSearchScope.allScope(project));
                 if (translationFiles.size() != files.size()) {
                     missingKeys.add(keyElement);
