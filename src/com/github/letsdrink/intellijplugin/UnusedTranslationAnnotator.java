@@ -6,13 +6,10 @@ import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.ExternalAnnotator;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.util.indexing.FileBasedIndex;
-import com.jetbrains.php.lang.parser.PhpElementTypes;
 import com.jetbrains.php.lang.psi.elements.ArrayHashElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,30 +19,18 @@ import java.util.Collection;
 import java.util.List;
 
 
-public class UnusedTranslationAnnotator extends ExternalAnnotator<UnusedTranslationAnnotator.UnusedTranslations, UnusedTranslationAnnotator.UnusedTranslations> {
-    static class UnusedTranslations {
-        private final List<PsiElement> unusedKeys;
-        public static final UnusedTranslations EMPTY = new UnusedTranslations(new ArrayList<PsiElement>());
-
-        public UnusedTranslations(List<PsiElement> unusedKeys) {
-            this.unusedKeys = unusedKeys;
-        }
-
-        public List<PsiElement> getUnusedKeys() {
-            return unusedKeys;
-        }
-    }
-
+public class UnusedTranslationAnnotator extends ExternalAnnotator<List<PsiElement>, List<PsiElement>> {
     @Nullable
     @Override
-    public UnusedTranslations collectInformation(@NotNull PsiFile file) {
+    public List<PsiElement> collectInformation(@NotNull PsiFile file) {
+        final List<PsiElement> unusedKeys = new ArrayList<>();
+
         if (!TranslationUtils.isTranslationFile(file)) {
-            return UnusedTranslations.EMPTY;
+            return unusedKeys;
         }
 
         final Project project = file.getProject();
         final FileBasedIndex index = FileBasedIndex.getInstance();
-        final List<PsiElement> unusedKeys = new ArrayList<>();
 
         TranslationParser translationParser = new TranslationParser();
         translationParser.parse(file, new TranslationParser.Handler() {
@@ -56,7 +41,7 @@ public class UnusedTranslationAnnotator extends ExternalAnnotator<UnusedTranslat
                 }
             }
         });
-        return new UnusedTranslations(unusedKeys);
+        return unusedKeys;
     }
 
     private boolean isUsed(Project project, FileBasedIndex index, String key) {
@@ -70,13 +55,13 @@ public class UnusedTranslationAnnotator extends ExternalAnnotator<UnusedTranslat
 
     @Nullable
     @Override
-    public UnusedTranslations doAnnotate(UnusedTranslations collectedInfo) {
+    public List<PsiElement> doAnnotate(List<PsiElement> collectedInfo) {
         return collectedInfo;
     }
 
     @Override
-    public void apply(@NotNull PsiFile file, UnusedTranslations annotationResult, @NotNull AnnotationHolder holder) {
-        for (PsiElement element : annotationResult.getUnusedKeys()) {
+    public void apply(@NotNull PsiFile file, List<PsiElement> unusedKeys, @NotNull AnnotationHolder holder) {
+        for (PsiElement element : unusedKeys) {
             holder.createWarningAnnotation(element, "Unused Translation");
         }
     }
