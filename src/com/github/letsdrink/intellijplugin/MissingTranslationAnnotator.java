@@ -2,16 +2,15 @@ package com.github.letsdrink.intellijplugin;
 
 
 import com.github.letsdrink.intellijplugin.index.TranslationKeyIndex;
+import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.ExternalAnnotator;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.util.indexing.FileBasedIndex;
-import com.jetbrains.php.lang.parser.PhpElementTypes;
 import com.jetbrains.php.lang.psi.elements.ParameterList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -56,8 +55,8 @@ public class MissingTranslationAnnotator extends ExternalAnnotator<List<PsiEleme
     @Override
     public void apply(@NotNull PsiFile file, List<PsiElement> annotationResult, @NotNull AnnotationHolder holder) {
         for (PsiElement element : annotationResult) {
-            holder.createWarningAnnotation(element, "Missing Translation");
+            Annotation warningAnnotation = holder.createWarningAnnotation(element, "Missing Translation");
+            warningAnnotation.registerFix(new AddMissingTranslationIntentionAction());
         }
     }
-
 }

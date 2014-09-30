@@ -18,6 +18,14 @@ public class TranslationDialog extends JDialog {
         // TODO: place custom component creation code here
     }
 
+    public void showDialog() {
+        pack();
+        setTitle("Input translation key");
+        setSize(470, 200);
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
+
     public interface OkCallback {
         void onClick(String key, Map<String, String> translations);
     }

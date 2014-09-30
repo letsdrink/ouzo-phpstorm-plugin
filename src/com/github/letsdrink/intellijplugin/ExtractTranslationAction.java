@@ -75,11 +75,7 @@ public class ExtractTranslationAction extends AnAction {
                 }
             }
         });
-        dialog.pack();
-        dialog.setTitle("Input translation key");
-        dialog.setSize(470, 200);
-        dialog.setLocationRelativeTo(null);
-        dialog.setVisible(true);
+        dialog.showDialog();
     }
 
     private List<String> getKeys(List<TranslationFileFacade> translationFileFacades, String text) {
