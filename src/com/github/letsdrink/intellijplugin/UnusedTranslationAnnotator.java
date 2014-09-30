@@ -43,20 +43,19 @@ public class UnusedTranslationAnnotator extends ExternalAnnotator<UnusedTranslat
             return UnusedTranslations.EMPTY;
         }
 
-        Project project = file.getProject();
-        FileBasedIndex index = FileBasedIndex.getInstance();
-        Collection<ArrayHashElement> hashElements = PsiTreeUtil.collectElementsOfType(file, ArrayHashElement.class);
-        TranslationFileFacade translationFileFacade = new TranslationFileFacade(file);
+        final Project project = file.getProject();
+        final FileBasedIndex index = FileBasedIndex.getInstance();
+        final List<PsiElement> unusedKeys = new ArrayList<>();
 
-        List<PsiElement> unusedKeys = new ArrayList<>();
-        for (ArrayHashElement hashElement : hashElements) {
-            if (!PlatformPatterns.psiElement(PhpElementTypes.ARRAY_CREATION_EXPRESSION).accepts(hashElement.getValue())) {
-                String key = translationFileFacade.getKey(hashElement);
+        TranslationParser translationParser = new TranslationParser();
+        translationParser.parse(file, new TranslationParser.Handler() {
+            @Override
+            public void handle(String key, String text, ArrayHashElement element) {
                 if (!isUsed(project, index, key)) {
-                    unusedKeys.add(hashElement.getKey());
+                    unusedKeys.add(element.getKey());
                 }
             }
-        }
+        });
         return new UnusedTranslations(unusedKeys);
     }
 

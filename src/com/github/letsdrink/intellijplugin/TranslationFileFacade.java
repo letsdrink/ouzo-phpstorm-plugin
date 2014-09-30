@@ -78,17 +78,18 @@ public class TranslationFileFacade {
         return psiFile.getName().replaceFirst(".php", "");
     }
 
-    public List<String> getKeys(String translation) {
-        List<String> results = new ArrayList<String>();
-        Collection<ArrayHashElement> hashElements = PsiTreeUtil.collectElementsOfType(psiFile, ArrayHashElement.class);
-        for (ArrayHashElement hashElement : hashElements) {
-            PhpPsiElement value = hashElement.getValue();
-            if (PlatformPatterns.psiElement(PhpElementTypes.STRING).accepts(value)) {
-                if (translation.equals(getContent(value))) {
-                    results.add(getKey(hashElement));
+    public List<String> getKeys(final String translation) {
+        final List<String> results = new ArrayList<String>();
+
+        TranslationParser translationParser = new TranslationParser();
+        translationParser.parse(psiFile, new TranslationParser.Handler() {
+            @Override
+            public void handle(String key, String text, ArrayHashElement element) {
+                if (translation.equals(text)) {
+                    results.add(key);
                 }
             }
-        }
+        });
         return results;
     }
 
