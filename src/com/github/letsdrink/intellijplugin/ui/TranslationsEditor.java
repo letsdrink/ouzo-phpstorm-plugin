@@ -1,5 +1,7 @@
 package com.github.letsdrink.intellijplugin.ui;
 
+import org.apache.commons.lang.StringUtils;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
@@ -33,6 +35,15 @@ public class TranslationsEditor extends JPanel {
             panel.add(label);
             panel.add(textField);
             add(panel);
+        }
+    }
+
+    public void setValues(Map<String, String> translationsMap) {
+        for (Map.Entry<String, String> entry : translationsMap.entrySet()) {
+            JTextField textField = inputs.get(entry.getKey());
+            if (textField != null && StringUtils.isNotBlank(entry.getValue())) {
+                textField.setText(entry.getValue());
+            }
         }
     }
 

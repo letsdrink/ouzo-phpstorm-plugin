@@ -61,9 +61,7 @@ public class ExtractTranslationAction extends AnAction {
 
         List<String> keys = getKeys(translationFileFacades, text);
 
-        final Map<String, String> translations = new TranslationsMapCreator().createTranslationsMap(translationFileFacades, Iterables.getFirst(keys, ""), text);
-
-        TranslationDialog dialog = new TranslationDialog(keys, translations, new TranslationDialog.OkCallback() {
+        TranslationDialog dialog = new TranslationDialog(new TranslationModel(translationFileFacades, keys, text), new TranslationDialog.OkCallback() {
             @Override
             public void onClick(final String key, Map<String, String> translations) {
                 lastKeyPrefix = TranslationUtils.getParentKey(key);
@@ -79,7 +77,7 @@ public class ExtractTranslationAction extends AnAction {
 
     private List<String> getKeys(List<TranslationFileFacade> translationFileFacades, String text) {
         List<String> keys = Lists.newArrayList(FluentIterable.from(translationFileFacades)
-                .transformAndConcat(TranslationFileFacade.getKeysFunction(text)));
+                .transformAndConcat(TranslationFileFacade.getKeysFunction(text)).toSet());
 
         if (lastKeyPrefix != null) {
             keys.add(lastKeyPrefix + ".");

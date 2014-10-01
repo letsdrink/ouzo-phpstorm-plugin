@@ -30,8 +30,7 @@ public abstract class TranslationIntentionAction extends PsiElementBaseIntention
         List<PsiFile> translationFiles = TranslationUtils.getTranslationFiles(project);
         final List<TranslationFileFacade> translationFileFacades = Lists.transform(translationFiles, TranslationFileFacade.createParser());
 
-        Map<String, String> translations = new TranslationsMapCreator().createTranslationsMap(translationFileFacades, key, "");
-        TranslationDialog dialog = new TranslationDialog(asList(key), translations, new TranslationDialog.OkCallback() {
+        TranslationDialog dialog = new TranslationDialog(new TranslationModel(translationFileFacades, asList(key), ""), new TranslationDialog.OkCallback() {
             @Override
             public void onClick(final String key, Map<String, String> translations) {
                 for (Map.Entry<String, String> entry : translations.entrySet()) {

@@ -6,7 +6,6 @@ import org.apache.commons.lang.StringUtils;
 
 import javax.swing.*;
 import java.awt.event.*;
-import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
@@ -36,18 +35,31 @@ public class TranslationDialog extends JDialog {
     private TranslationsEditor translations;
     private JComboBox key;
 
-    public TranslationDialog(List<String> keyTexts, Map<String, String> translationsMap, OkCallback okCallback) {
+    public TranslationDialog(final TranslationModel translationModel, OkCallback okCallback) {
         this.okCallback = okCallback;
-        translations.initialize(translationsMap);
+        translations.initialize(translationModel.getLangTextMap());
 
         setContentPane(contentPane);
         setModal(true);
 
         key.setEditable(true);
-        key.setModel(new DefaultComboBoxModel<String>(keyTexts.toArray(new String[0])));
-        if (!keyTexts.isEmpty()) {
+        key.setModel(new DefaultComboBoxModel<String>(translationModel.getKeys().toArray(new String[0])));
+        if (!translationModel.getKeys().isEmpty()) {
             key.setSelectedIndex(0);
         }
+
+        key.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent evt) {
+                String item = (String)evt.getItem();
+
+                if (evt.getStateChange() == ItemEvent.SELECTED) {
+                    Map<String, String> langTextMap = translationModel.getLangTextMap(item);
+                    if (langTextMap != null) {
+                        translations.setValues(langTextMap);
+                    }
+                }
+            }
+        });
 
         getRootPane().setDefaultButton(buttonOK);
 
@@ -80,7 +92,7 @@ public class TranslationDialog extends JDialog {
     }
 
     private void onOK() {
-        String keyText = (String)key.getSelectedItem();
+        String keyText = (String) key.getSelectedItem();
         if (StringUtils.isBlank(keyText) || keyText.endsWith(".")) {
             return;
         }
@@ -94,7 +106,19 @@ public class TranslationDialog extends JDialog {
     }
 
     public static void main(String[] args) {
-        TranslationDialog dialog = new TranslationDialog(asList("test"), ImmutableMap.of("en", "asd"), new OkCallback() {
+        Map<String, Map<String, String>> map = ImmutableMap.of(
+                "key1", (Map<String, String>) ImmutableMap.of(
+                        "en", "en val1",
+                        "pl", "pl val1"
+                ),
+                "key2", ImmutableMap.of(
+                        "en", "en val2",
+                        "pl", "pl val2"
+                )
+        );
+
+
+        TranslationDialog dialog = new TranslationDialog(new TranslationModel(asList("key1", "key2", "prev."), map), new OkCallback() {
             @Override
             public void onClick(final String key, Map<String, String> translations) {
             }
