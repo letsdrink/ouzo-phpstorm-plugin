@@ -30,7 +30,7 @@ import java.util.Map;
 import static java.util.Arrays.asList;
 
 public class ExtractTranslationAction extends AnAction {
-    private static String lastKeyPrefix;
+    private static PreviousTranslationPrefixes previousPrefixes = new PreviousTranslationPrefixes();
 
     public ExtractTranslationAction() {
         super("ExtractTranslation");
@@ -64,7 +64,7 @@ public class ExtractTranslationAction extends AnAction {
         TranslationDialog dialog = new TranslationDialog(new TranslationModel(translationFileFacades, keys, text), new TranslationDialog.OkCallback() {
             @Override
             public void onClick(final String key, Map<String, String> translations) {
-                lastKeyPrefix = TranslationUtils.getParentKey(key);
+                previousPrefixes.addForKey(key);
                 replaceTextWithTranslation(key, textPsiElement, editor);
                 for (Map.Entry<String, String> entry : translations.entrySet()) {
                     TranslationFileFacade parser = Iterables.find(translationFileFacades, TranslationFileFacade.languageEqualsFunction(entry.getKey()));
@@ -79,9 +79,8 @@ public class ExtractTranslationAction extends AnAction {
         List<String> keys = Lists.newArrayList(FluentIterable.from(translationFileFacades)
                 .transformAndConcat(TranslationFileFacade.getKeysFunction(text)).toSet());
 
-        if (lastKeyPrefix != null) {
-            keys.add(lastKeyPrefix + ".");
-        }
+        keys.addAll(previousPrefixes.getList());
+
         return keys;
     }
 
