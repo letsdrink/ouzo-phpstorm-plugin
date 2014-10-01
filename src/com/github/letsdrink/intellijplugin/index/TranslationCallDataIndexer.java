@@ -23,10 +23,7 @@ class TranslationCallDataIndexer implements DataIndexer<String, Void, FileConten
         translationCallParser.parse(psiFile, new TranslationCallParser.TranslationCallHandler() {
             @Override
             public void handleKey(String key, PsiElement keyElement) {
-                while (key != null) {
-                    map.put(key, null);
-                    key = TranslationUtils.getParentKey(key);
-                }
+                map.put(key, null);
             }
         });
         return map;
