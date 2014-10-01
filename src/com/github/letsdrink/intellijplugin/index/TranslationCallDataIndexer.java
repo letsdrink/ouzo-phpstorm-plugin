@@ -1,6 +1,7 @@
 package com.github.letsdrink.intellijplugin.index;
 
 import com.github.letsdrink.intellijplugin.TranslationCallParser;
+import com.github.letsdrink.intellijplugin.TranslationUtils;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.util.indexing.DataIndexer;
@@ -22,7 +23,10 @@ class TranslationCallDataIndexer implements DataIndexer<String, Void, FileConten
         translationCallParser.parse(psiFile, new TranslationCallParser.TranslationCallHandler() {
             @Override
             public void handleKey(String key, PsiElement keyElement) {
-                map.put(key, null);
+                while (key != null) {
+                    map.put(key, null);
+                    key = TranslationUtils.getParentKey(key);
+                }
             }
         });
         return map;

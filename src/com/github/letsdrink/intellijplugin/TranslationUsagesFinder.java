@@ -102,7 +102,7 @@ public class TranslationUsagesFinder {
         translationCallParser.parse(file, new TranslationCallParser.TranslationCallHandler() {
             @Override
             public void handleKey(String key, PsiElement keyElement) {
-                if (searchedKey.equals(key) || TranslationUtils.isParent(key, searchedKey)) {
+                if (searchedKey.equals(key) || TranslationUtils.isParent(key, searchedKey)|| TranslationUtils.isParent(searchedKey, key)) {
                     translationKeys.add(keyElement);
                 }
             }

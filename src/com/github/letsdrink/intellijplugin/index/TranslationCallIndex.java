@@ -41,7 +41,7 @@ public class TranslationCallIndex extends ScalarIndexExtension<String> {
 
     @Override
     public int getVersion() {
-        return 2;
+        return 3;
     }
 
 }
