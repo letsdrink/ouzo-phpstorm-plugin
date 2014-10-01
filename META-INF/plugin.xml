@@ -1,7 +1,7 @@
 <idea-plugin version="2" url="https://github.com/letsdrink/ouzo-phpstorm-plugin">
     <id>com.github.letsdrink.intellijplugin</id>
     <name>Ouzo framework plugin</name>
-    <version>1.4.0</version>
+    <version>1.4.1</version>
     <vendor email="ouzo-framework@googlegroups.com" url="http://ouzoframework.org/">Ouzo contributors</vendor>
 
     <description><![CDATA[
@@ -24,6 +24,7 @@
     <li>Annotate invalid entries in translation files</li>
     <li>Annotate missing translations</li>
     <li>Add missing translation intention action</li>
+    <li>Edit translation intention action</li>
     <li>Show all usages of a translation key (Edit/Find/Show translation usages)</li>
 </ul>
     ]]></description>
@@ -52,6 +53,9 @@
         <externalAnnotator language="PHP" implementationClass="com.github.letsdrink.intellijplugin.MissingTranslationAnnotator"/>
 
         <annotator language="PHP" implementationClass="com.github.letsdrink.intellijplugin.InvalidTranslationAnnotator"/>
+        <intentionAction>
+            <className>com.github.letsdrink.intellijplugin.EditTranslationIntentionAction</className>
+        </intentionAction>
     </extensions>
 
     <depends>com.jetbrains.php</depends>

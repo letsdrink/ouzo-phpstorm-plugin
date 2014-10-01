@@ -24,7 +24,6 @@ import com.jetbrains.php.lang.psi.elements.StringLiteralExpression;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -62,7 +61,7 @@ public class ExtractTranslationAction extends AnAction {
 
         List<String> keys = getKeys(translationFileFacades, text);
 
-        final Map<String, String> translations = createTranslationsMap(translationFileFacades, Iterables.getFirst(keys, ""), text);
+        final Map<String, String> translations = new TranslationsMapCreator().createTranslationsMap(translationFileFacades, Iterables.getFirst(keys, ""), text);
 
         TranslationDialog dialog = new TranslationDialog(keys, translations, new TranslationDialog.OkCallback() {
             @Override
@@ -95,16 +94,6 @@ public class ExtractTranslationAction extends AnAction {
                 return isTypeSupported(psiElement);
             }
         };
-    }
-
-    private Map<String, String> createTranslationsMap(List<TranslationFileFacade> translationFileFacades, String key, String text) {
-        final Map<String, String> translations = new HashMap<String, String>();
-        for (TranslationFileFacade translationFileFacade : translationFileFacades) {
-            String translation = translationFileFacade.getTranslation(key);
-            translation = translation == null ? text : translation;
-            translations.put(translationFileFacade.getLanguage(), translation);
-        }
-        return translations;
     }
 
     private String getTextToTranslate(PsiElement psiElement) {
