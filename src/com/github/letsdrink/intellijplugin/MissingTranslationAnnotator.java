@@ -2,6 +2,7 @@ package com.github.letsdrink.intellijplugin;
 
 
 import com.github.letsdrink.intellijplugin.index.TranslationKeyIndex;
+import com.google.common.base.Joiner;
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.ExternalAnnotator;
@@ -38,8 +39,11 @@ public class MissingTranslationAnnotator extends ExternalAnnotator<List<PsiEleme
                     return;
                 }
                 Collection<VirtualFile> files = index.getContainingFiles(TranslationKeyIndex.KEY, key, GlobalSearchScope.allScope(project));
-                if (translationFiles.size() != files.size()) {
+                if (translationFiles.size() > files.size()) {
                     missingKeys.add(keyElement);
+                }
+                if (translationFiles.size() < files.size()) {
+                    throw new IllegalStateException("Too many translation files in index: " + Joiner.on(", ").join(files));
                 }
             }
         });
