@@ -19,8 +19,7 @@ public class PsiUtils {
         }
 
         if (value instanceof ConstantReferenceImpl) {
-            int valueIndex = 1;
-            return getContent(((ConstantReferenceImpl) value).resolve().getChildren()[valueIndex]);
+            return value.getText(); //we cannot resolve constant value when this method is called from index because indices are not accessible then.
         }
         return null;
     }
