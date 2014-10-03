@@ -25,7 +25,7 @@ public class UnusedTranslationAnnotator extends ExternalAnnotator<List<PsiElemen
     public List<PsiElement> collectInformation(@NotNull PsiFile file) {
         final List<PsiElement> unusedKeys = new ArrayList<>();
 
-        if (!TranslationUtils.isTranslationFile(file)) {
+        if (!TranslationUtils.isTranslationFile(file) || !Settings.getInstance(file.getProject()).annotateUnusedTranslation) {
             return unusedKeys;
         }
 

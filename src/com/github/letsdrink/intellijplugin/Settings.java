@@ -15,6 +15,8 @@ import com.intellij.util.xmlb.XmlSerializerUtil;
 public class Settings implements PersistentStateComponent<Settings> {
 
     public String ouzoProjectRoot;
+    public boolean annotateUnusedTranslation = true;
+    public boolean annotateMissingTranslation = true;
     private Project project;
 
     @Override

@@ -25,6 +25,8 @@ public class SettingsForm implements Configurable {
     private TextFieldWithBrowseButton ouzoProjectRoot;
     private JPanel panel;
     private JButton resetPath;
+    private JCheckBox annotateMissing;
+    private JCheckBox annotateUnused;
 
     public SettingsForm(@NotNull final Project project) {
         this.project = project;
@@ -52,17 +54,27 @@ public class SettingsForm implements Configurable {
 
     @Override
     public boolean isModified() {
-        return !Objects.equals(getSettings().ouzoProjectRoot, ouzoProjectRoot.getText());
+        Settings settings = getSettings();
+        return !Objects.equals(settings.ouzoProjectRoot, ouzoProjectRoot.getText()) ||
+                settings.annotateMissingTranslation != annotateMissing.isSelected() ||
+                settings.annotateUnusedTranslation != annotateUnused.isSelected()
+                ;
     }
 
     @Override
     public void apply() throws ConfigurationException {
-        getSettings().ouzoProjectRoot = ouzoProjectRoot.getText();
+        Settings settings = getSettings();
+        settings.ouzoProjectRoot = ouzoProjectRoot.getText();
+        settings.annotateMissingTranslation = annotateMissing.isSelected();
+        settings.annotateUnusedTranslation = annotateUnused.isSelected();
     }
 
     @Override
     public void reset() {
-        ouzoProjectRoot.setText(getSettings().ouzoProjectRoot);
+        Settings settings = getSettings();
+        ouzoProjectRoot.setText(settings.ouzoProjectRoot);
+        annotateMissing.setSelected(settings.annotateMissingTranslation);
+        annotateUnused.setSelected(settings.annotateUnusedTranslation);
     }
 
     @Override

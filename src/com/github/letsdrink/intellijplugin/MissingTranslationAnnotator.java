@@ -26,10 +26,15 @@ public class MissingTranslationAnnotator extends ExternalAnnotator<List<PsiEleme
     @Override
     public List<PsiElement> collectInformation(@NotNull PsiFile file) {
         final Project project = file.getProject();
+        final List<PsiElement> missingKeys = new ArrayList<>();
+
+        if (!Settings.getInstance(file.getProject()).annotateMissingTranslation) {
+            return missingKeys;
+        }
+
         final FileBasedIndex index = FileBasedIndex.getInstance();
 
         final List<PsiFile> translationFiles = TranslationUtils.getTranslationFiles(project);
-        final List<PsiElement> missingKeys = new ArrayList<>();
 
         TranslationCallParser translationCallParser = new TranslationCallParser();
         translationCallParser.parse(file, new TranslationCallParser.TranslationCallHandler() {
