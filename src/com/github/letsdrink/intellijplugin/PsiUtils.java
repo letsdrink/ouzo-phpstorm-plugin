@@ -4,6 +4,9 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiReference;
+import com.intellij.psi.tree.IElementType;
+import com.jetbrains.php.lang.lexer.PhpTokenTypes;
+import com.jetbrains.php.lang.parser.PhpElementTypes;
 import com.jetbrains.php.lang.psi.elements.*;
 import com.jetbrains.php.lang.psi.elements.impl.ConstantReferenceImpl;
 import com.jetbrains.php.lang.psi.elements.impl.PhpExpressionImpl;
@@ -107,5 +110,15 @@ public class PsiUtils {
 
     public static String getContainingFilename(PsiElement psiElement) {
         return psiElement.getContainingFile().getName();
+    }
+
+    static void deleteArrayElement(PsiElement element) {
+        IElementType type;
+        do {
+            PsiElement nextSibling = element.getNextSibling();
+            element.delete();
+            element = nextSibling;
+            type = element.getNode().getElementType();
+        } while (type == PhpElementTypes.WHITE_SPACE || type == PhpTokenTypes.opCOMMA);
     }
 }

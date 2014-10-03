@@ -26,6 +26,7 @@
     <li>Add missing translation intention action</li>
     <li>Edit translation intention action</li>
     <li>Show all usages of a translation key (Edit/Find/Show translation usages)</li>
+    <li>Remove unused translation intention action</li>
 </ul>
     ]]></description>
 

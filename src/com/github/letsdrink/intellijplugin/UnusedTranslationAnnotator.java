@@ -2,6 +2,7 @@ package com.github.letsdrink.intellijplugin;
 
 
 import com.github.letsdrink.intellijplugin.index.TranslationCallIndex;
+import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.ExternalAnnotator;
 import com.intellij.openapi.project.Project;
@@ -62,7 +63,8 @@ public class UnusedTranslationAnnotator extends ExternalAnnotator<List<PsiElemen
     @Override
     public void apply(@NotNull PsiFile file, List<PsiElement> unusedKeys, @NotNull AnnotationHolder holder) {
         for (PsiElement element : unusedKeys) {
-            holder.createWarningAnnotation(element, "Unused Translation");
+            Annotation annotation = holder.createWarningAnnotation(element, "Unused Translation");
+            annotation.registerFix(new RemoveTranslationIntentionAction());
         }
     }
 
