@@ -41,9 +41,9 @@ public class TranslationUsagesAction extends AnAction {
         }
 
         TranslationFileFacade translationFileFacade = new TranslationFileFacade(psiFile);
-
         String key = translationFileFacade.getKey(hashElement);
-        TranslationUsagesFinder translationUsagesFinder = new TranslationUsagesFinder(hashElement);
+
+        TranslationUsagesFinder translationUsagesFinder = new TranslationUsagesFinder(key);
         UsageInfo[] usageInfos = translationUsagesFinder.findUsages(project);
         Usage[] usages = FluentIterable.from(asList(usageInfos))
                 .transform(toUsage())

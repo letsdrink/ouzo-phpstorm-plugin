@@ -56,11 +56,6 @@
         <intentionAction>
             <className>com.github.letsdrink.intellijplugin.EditTranslationIntentionAction</className>
         </intentionAction>
-
-        <findUsagesHandlerFactory implementation="com.github.letsdrink.intellijplugin.TranslationFindUsagesHandlerFactory" id="Ouzo" order="first, before php"/>
-        <usageTargetProvider implementation="com.github.letsdrink.intellijplugin.TranslationUsageTargetProvider" />
-        <!--<usageTypeProvider implementation="com.github.letsdrink.intellijplugin.TranslationUsageTypeProvider"/>-->
-        <customUsageSearcher implementation="com.github.letsdrink.intellijplugin.TranslationUsageSearcher" />
     </extensions>
 
     <depends>com.jetbrains.php</depends>
