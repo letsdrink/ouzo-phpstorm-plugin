@@ -25,6 +25,10 @@ public class TranslationDialog extends JDialog {
         setVisible(true);
     }
 
+    public void disableKey() {
+        key.setEnabled(false);
+    }
+
     public interface OkCallback {
         void onClick(String key, Map<String, String> translations);
     }

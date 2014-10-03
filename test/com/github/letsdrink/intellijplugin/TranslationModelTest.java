@@ -3,6 +3,7 @@ package com.github.letsdrink.intellijplugin;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
@@ -12,13 +13,13 @@ import static org.mockito.Mockito.when;
 
 public class TranslationModelTest {
     @Test
-    public void shouldTranslatePreviousPrefixKeyToExtractedTextWhenThereAreNoOtherKeys() {
+    public void shouldTranslatePreviousPrefixKeyToExtractedTextWhenThereAreNoFoundKeys() {
         //given
         TranslationFileFacade translationFileFacade = mock(TranslationFileFacade.class);
 
         when(translationFileFacade.getLanguage()).thenReturn("en");
 
-        TranslationModel translationModel = new TranslationModel(asList(translationFileFacade), asList("prev."), "text");
+        TranslationModel translationModel = new TranslationModel(asList(translationFileFacade), new ArrayList<String>(), asList("prev."), "text");
 
         //when
         Map<String, String> map = translationModel.getLangTextMap("prev.");
@@ -30,13 +31,13 @@ public class TranslationModelTest {
     }
 
     @Test
-    public void shouldNotTranslatePreviousPrefixKeyWhenThereAreOtherKeys() {
+    public void shouldNotTranslatePreviousPrefixKeyWhenThereAreFoundKeys() {
         //given
         TranslationFileFacade translationFileFacade = mock(TranslationFileFacade.class);
 
         when(translationFileFacade.getLanguage()).thenReturn("en");
 
-        TranslationModel translationModel = new TranslationModel(asList(translationFileFacade), asList("key", "prev."), "text");
+        TranslationModel translationModel = new TranslationModel(asList(translationFileFacade), asList("key"), asList("prev."), "text");
 
         //when
         Map<String, String> map = translationModel.getLangTextMap("prev.");

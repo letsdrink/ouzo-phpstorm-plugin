@@ -39,6 +39,7 @@ public abstract class TranslationIntentionAction extends PsiElementBaseIntention
                 }
             }
         });
+        dialog.disableKey();
         dialog.showDialog();
     }
 }

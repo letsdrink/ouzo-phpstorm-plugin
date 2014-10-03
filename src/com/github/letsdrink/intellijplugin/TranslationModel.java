@@ -2,7 +2,9 @@ package com.github.letsdrink.intellijplugin;
 
 
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,12 +20,22 @@ public class TranslationModel {
     }
 
     public TranslationModel(List<TranslationFileFacade> translationFileFacades, List<String> keys, String text) {
-        this.keys = keys;
-        for (String key : keys) {
-            addForKey(translationFileFacades, key.endsWith(".") && keys.size() == 1 ? text : "", key);
-        }
-        if (keys.isEmpty()) {
+        this(translationFileFacades, keys, new ArrayList<String>(), text);
+    }
+
+    public TranslationModel(List<TranslationFileFacade> translationFileFacades, List<String> foundKeys, List<String> prevKeys, String text) {
+        this.keys = Lists.newArrayList(Iterables.concat(foundKeys, prevKeys));
+
+        if (this.keys.isEmpty()) {
             addForKey(translationFileFacades, text, EMPTY_KEY);
+        }
+
+        for (String key : foundKeys) {
+            addForKey(translationFileFacades, "", key);
+        }
+
+        for (String key : prevKeys) {
+            addForKey(translationFileFacades, foundKeys.isEmpty() ? text : "", key);
         }
     }
 

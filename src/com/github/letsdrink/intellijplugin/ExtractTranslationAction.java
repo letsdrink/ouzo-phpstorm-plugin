@@ -59,9 +59,10 @@ public class ExtractTranslationAction extends AnAction {
         List<PsiFile> translationFiles = TranslationUtils.getTranslationFiles(project);
         final List<TranslationFileFacade> translationFileFacades = Lists.transform(translationFiles, TranslationFileFacade.createParser());
 
-        List<String> keys = getKeys(translationFileFacades, text);
+        List<String> keys = Lists.newArrayList(FluentIterable.from(translationFileFacades)
+                .transformAndConcat(TranslationFileFacade.getKeysFunction(text)).toSet());
 
-        TranslationDialog dialog = new TranslationDialog(new TranslationModel(translationFileFacades, keys, text), new TranslationDialog.OkCallback() {
+        TranslationDialog dialog = new TranslationDialog(new TranslationModel(translationFileFacades, keys, previousPrefixes.getList(), text), new TranslationDialog.OkCallback() {
             @Override
             public void onClick(final String key, Map<String, String> translations) {
                 previousPrefixes.addForKey(key);
@@ -73,15 +74,6 @@ public class ExtractTranslationAction extends AnAction {
             }
         });
         dialog.showDialog();
-    }
-
-    private List<String> getKeys(List<TranslationFileFacade> translationFileFacades, String text) {
-        List<String> keys = Lists.newArrayList(FluentIterable.from(translationFileFacades)
-                .transformAndConcat(TranslationFileFacade.getKeysFunction(text)).toSet());
-
-        keys.addAll(previousPrefixes.getList());
-
-        return keys;
     }
 
     private Predicate<PsiElement> isSupportedPredicate() {
