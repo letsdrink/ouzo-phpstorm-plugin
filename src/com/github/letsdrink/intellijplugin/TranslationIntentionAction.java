@@ -35,7 +35,7 @@ public abstract class TranslationIntentionAction extends PsiElementBaseIntention
             public void onClick(final String key, Map<String, String> translations) {
                 for (Map.Entry<String, String> entry : translations.entrySet()) {
                     TranslationFileFacade parser = Iterables.find(translationFileFacades, TranslationFileFacade.languageEqualsFunction(entry.getKey()));
-                    parser.addTranslation(key, entry.getValue());
+                    parser.addTranslationInWriteCommand(key, entry.getValue());
                 }
             }
         });

@@ -69,7 +69,7 @@ public class ExtractTranslationAction extends AnAction {
                 replaceTextWithTranslation(key, textPsiElement, editor);
                 for (Map.Entry<String, String> entry : translations.entrySet()) {
                     TranslationFileFacade parser = Iterables.find(translationFileFacades, TranslationFileFacade.languageEqualsFunction(entry.getKey()));
-                    parser.addTranslation(key, entry.getValue());
+                    parser.addTranslationInWriteCommand(key, entry.getValue());
                 }
             }
         });

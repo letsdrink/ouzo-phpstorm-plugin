@@ -57,6 +57,8 @@
         <intentionAction>
             <className>com.github.letsdrink.intellijplugin.EditTranslationIntentionAction</className>
         </intentionAction>
+
+        <renameHandler implementation="com.github.letsdrink.intellijplugin.TranslationKeyRenameHandler"/>
     </extensions>
 
     <depends>com.jetbrains.php</depends>

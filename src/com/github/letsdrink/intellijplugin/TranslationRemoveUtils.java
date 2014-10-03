@@ -12,9 +12,13 @@ import java.util.List;
 
 public class TranslationRemoveUtils {
     public static List<PsiElement> getElementToRemove(Project project, String key) {
-        final List<PsiElement> elementsToRemove = new ArrayList<PsiElement>();
         List<PsiFile> translationFiles = TranslationUtils.getTranslationFiles(project);
         List<TranslationFileFacade> translationFileFacades = Lists.transform(translationFiles, TranslationFileFacade.createParser());
+        return getElementToRemove(key, translationFileFacades);
+    }
+
+    public static List<PsiElement> getElementToRemove(String key, List<TranslationFileFacade> translationFileFacades) {
+        final List<PsiElement> elementsToRemove = new ArrayList<PsiElement>();
 
         for (TranslationFileFacade translationFileFacade : translationFileFacades) {
             ArrayHashElement element = translationFileFacade.getTranslationElement(key);
@@ -26,7 +30,7 @@ public class TranslationRemoveUtils {
         return elementsToRemove;
     }
 
-    private static PsiElement findElementToRemove(PsiElement element) {
+    public static PsiElement findElementToRemove(PsiElement element) {
         if (element != null && element.getParent().getChildren().length == 1 && element.getParent().getParent().getParent() instanceof ArrayHashElement) {
             return findElementToRemove(element.getParent().getParent().getParent());
         } else {

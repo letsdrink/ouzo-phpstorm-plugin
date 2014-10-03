@@ -13,6 +13,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.jetbrains.php.lang.parser.PhpElementTypes;
+import com.jetbrains.php.lang.psi.PhpPsiElementFactory;
 import com.jetbrains.php.lang.psi.elements.ArrayHashElement;
 import com.jetbrains.php.lang.psi.elements.PhpPsiElement;
 import com.jetbrains.php.lang.psi.elements.PhpReturn;
@@ -135,6 +136,26 @@ public class TranslationFileFacade {
     - be missing with missing nested keys
     - be an array (incomplete key)
      */
+    public void addTranslationInWriteCommand(final String key, final String text) {
+        Project project = psiFile.getProject();
+        final PsiDocumentManager manager = PsiDocumentManager.getInstance(project);
+        final Document document = manager.getDocument(psiFile);
+
+        new WriteCommandAction(project) {
+            @Override
+            protected void run(Result result) throws Throwable {
+                manager.doPostponedOperationsAndUnblockDocument(document);
+                addTranslation(key, text);
+                manager.commitDocument(document);
+            }
+
+            @Override
+            public String getGroupID() {
+                return "Translation Extraction";
+            }
+        }.execute();
+    }
+
     public void addTranslation(String key, String text) {
         List<String> keys = Splitter.on(".").splitToList(key);
         List<String> missingKeys = new ArrayList<String>();
@@ -198,19 +219,7 @@ public class TranslationFileFacade {
         final PsiDocumentManager manager = PsiDocumentManager.getInstance(project);
         final Document document = manager.getDocument(psiFile);
 
-        new WriteCommandAction(project) {
-            @Override
-            protected void run(Result result) throws Throwable {
-                document.insertString(position, text);
-                manager.doPostponedOperationsAndUnblockDocument(document);
-                manager.commitDocument(document);
-            }
-
-            @Override
-            public String getGroupID() {
-                return "Translation Extraction";
-            }
-        }.execute();
+        document.insertString(position, text);
     }
 
     private void overwrite(final PhpPsiElement value, final String text) {
@@ -218,19 +227,11 @@ public class TranslationFileFacade {
         final PsiDocumentManager manager = PsiDocumentManager.getInstance(project);
         final Document document = manager.getDocument(psiFile);
 
-        new WriteCommandAction(project) {
-            @Override
-            protected void run(Result result) throws Throwable {
-                document.deleteString(value.getTextRange().getStartOffset(), value.getTextRange().getEndOffset());
-                document.insertString(value.getTextRange().getStartOffset(), "'" + text + "'");
-                manager.doPostponedOperationsAndUnblockDocument(document);
-                manager.commitDocument(document);
-            }
+        document.deleteString(value.getTextRange().getStartOffset(), value.getTextRange().getEndOffset());
+        document.insertString(value.getTextRange().getStartOffset(), "'" + text + "'");
+    }
 
-            @Override
-            public String getGroupID() {
-                return "Translation Extraction";
-            }
-        }.execute();
+    public PsiFile getPsiFile() {
+        return psiFile;
     }
 }
