@@ -1,24 +1,27 @@
 package com.github.letsdrink.intellijplugin.translation;
 
-import com.google.common.base.*;
+import com.google.common.base.Function;
+import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
+import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 import com.intellij.openapi.application.Result;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.project.Project;
-import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.tree.IElementType;
+import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.jetbrains.php.lang.parser.PhpElementTypes;
 import com.jetbrains.php.lang.psi.elements.ArrayHashElement;
 import com.jetbrains.php.lang.psi.elements.PhpPsiElement;
 import com.jetbrains.php.lang.psi.elements.PhpReturn;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import static com.github.letsdrink.intellijplugin.PsiUtils.getContent;
 import static java.util.Arrays.asList;
@@ -148,6 +151,7 @@ public class TranslationFileFacade {
             String insertionText = translationCodeBuilder.getInsertionText(text, keys, missingKeys, translationArray.getChildren().length > 0);
             insert(getInsertionPosition(translationArray), insertionText);
         }
+        CodeStyleManager.getInstance(psiFile.getProject()).reformat(translationArray, true);
     }
 
     private PsiElement findDestinationArrayParent(List<String> keys, List<String> missingKeys) {
