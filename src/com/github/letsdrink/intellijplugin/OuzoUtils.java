@@ -49,6 +49,10 @@ public class OuzoUtils {
             return Collections.emptyList();
         }
         Method containingMethod = PsiTreeUtil.getParentOfType(psiElement, Method.class);
+        if (containingMethod == null) {
+            return Collections.emptyList();
+        }
+
         PhpClass controllerClass = containingMethod.getContainingClass();
 
         if (containingMethod == null || !controllerClass.getName().endsWith("Controller")) {
