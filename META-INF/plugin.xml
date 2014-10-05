@@ -25,7 +25,7 @@
     <li>Annotate missing translations</li>
     <li>Add missing translation intention action</li>
     <li>Edit translation intention action</li>
-    <li>Show all usages of a translation key (Edit/Find/Show translation usages)</li>
+    <li>Show all usages of a translation key</li>
     <li>Remove unused translation intention action</li>
     <li>Rename refactoring for translation keys</li>
 </ul>
@@ -79,11 +79,6 @@
         <action id="GoToOuzoView" class="com.github.letsdrink.intellijplugin.GoToViewAction" text="Ouzo View">
             <add-to-group group-id="GoToTargetEx"/>
             <add-to-group group-id="EditorPopupMenu.GoTo"/>
-        </action>
-
-        <action id="TranslationUsages" class="com.github.letsdrink.intellijplugin.TranslationUsagesAction"
-                text="Show translation usages" description="Show all usages of a translation key">
-            <add-to-group group-id="FindMenuGroup" anchor="last"/>
         </action>
     </actions>
 </idea-plugin>
