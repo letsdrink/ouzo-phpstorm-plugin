@@ -7,6 +7,8 @@ import com.github.letsdrink.intellijplugin.translation.TranslationUtils;
 import com.intellij.find.findUsages.FindUsagesHandler;
 import com.intellij.find.findUsages.FindUsagesHandlerFactory;
 import com.intellij.find.findUsages.FindUsagesOptions;
+import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.util.Computable;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -28,10 +30,16 @@ public class TranslationFindUsagesHandlerFactory extends FindUsagesHandlerFactor
     public FindUsagesHandler createFindUsagesHandler(@NotNull final PsiElement psiElement, boolean forHighlightUsages) {
         return new FindUsagesHandler(psiElement) {
             @Override
-            public boolean processElementUsages(@NotNull PsiElement psiElement, @NotNull Processor<UsageInfo> usageInfoProcessor, @NotNull FindUsagesOptions findUsagesOptions) {
-                String key = getKey(psiElement);
-                TranslationUsagesFinder usagesFinder = new TranslationUsagesFinder(key);
-                UsageInfo[] usages = usagesFinder.findUsages(psiElement.getProject());
+            public boolean processElementUsages(@NotNull final PsiElement psiElement, @NotNull Processor<UsageInfo> usageInfoProcessor, @NotNull FindUsagesOptions findUsagesOptions) {
+                UsageInfo[] usages = ApplicationManager.getApplication().runReadAction(new Computable<UsageInfo[]>() {
+                    @Override
+                    public UsageInfo[] compute() {
+                        String key = getKey(psiElement);
+                        TranslationUsagesFinder usagesFinder = new TranslationUsagesFinder(key);
+                        return usagesFinder.findUsages(psiElement.getProject());
+                    }
+                });
+
                 for (UsageInfo usageInfo : usages) {
                     usageInfoProcessor.process(usageInfo);
                 }
