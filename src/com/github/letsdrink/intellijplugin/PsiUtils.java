@@ -112,13 +112,13 @@ public class PsiUtils {
         return psiElement.getContainingFile().getName();
     }
 
-    static void deleteArrayElement(PsiElement element) {
+    public static void deleteArrayElement(PsiElement element) {
         IElementType type;
         do {
             PsiElement nextSibling = element.getNextSibling();
             element.delete();
             element = nextSibling;
             type = element.getNode().getElementType();
-        } while (type == PhpElementTypes.WHITE_SPACE || type == PhpTokenTypes.opCOMMA);
+        } while (element.isValid() && (type == PhpElementTypes.WHITE_SPACE || type == PhpTokenTypes.opCOMMA));
     }
 }

@@ -1,7 +1,7 @@
 <idea-plugin version="2" url="https://github.com/letsdrink/ouzo-phpstorm-plugin">
     <id>com.github.letsdrink.intellijplugin</id>
     <name>Ouzo framework plugin</name>
-    <version>1.4.3</version>
+    <version>1.5.0</version>
     <vendor email="ouzo-framework@googlegroups.com" url="http://ouzoframework.org/">Ouzo contributors</vendor>
 
     <description><![CDATA[
@@ -27,6 +27,7 @@
     <li>Edit translation intention action</li>
     <li>Show all usages of a translation key (Edit/Find/Show translation usages)</li>
     <li>Remove unused translation intention action</li>
+    <li>Rename refactoring for translation keys</li>
 </ul>
     ]]></description>
 
@@ -58,7 +59,7 @@
             <className>com.github.letsdrink.intellijplugin.EditTranslationIntentionAction</className>
         </intentionAction>
 
-        <renameHandler implementation="com.github.letsdrink.intellijplugin.TranslationKeyRenameHandler"/>
+        <renameHandler implementation="com.github.letsdrink.intellijplugin.rename.TranslationKeyRenameHandler"/>
     </extensions>
 
     <depends>com.jetbrains.php</depends>

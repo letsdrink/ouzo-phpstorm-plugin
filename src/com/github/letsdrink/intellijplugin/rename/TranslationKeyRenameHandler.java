@@ -1,5 +1,6 @@
-package com.github.letsdrink.intellijplugin;
+package com.github.letsdrink.intellijplugin.rename;
 
+import com.github.letsdrink.intellijplugin.TranslationUtils;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.editor.Editor;
