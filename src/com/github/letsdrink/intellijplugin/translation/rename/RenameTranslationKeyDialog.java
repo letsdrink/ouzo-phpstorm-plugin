@@ -1,7 +1,6 @@
 package com.github.letsdrink.intellijplugin.translation.rename;
 
 
-import com.github.letsdrink.intellijplugin.translation.TranslationHashElement;
 import com.github.letsdrink.intellijplugin.translation.index.TranslationCallIndex;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.options.ConfigurationException;
@@ -18,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
-public class RenameTranslationKeyDialog extends RenameDialog {
+public abstract class RenameTranslationKeyDialog extends RenameDialog {
     private final String key;
 
     public RenameTranslationKeyDialog(@NotNull Project project, @NotNull PsiElement psiElement, @Nullable PsiElement nameSuggestionContext, Editor editor) {
@@ -28,9 +27,10 @@ public class RenameTranslationKeyDialog extends RenameDialog {
         getCbSearchInComments().setVisible(false);
     }
 
-    private String getKey() {
-        return TranslationHashElement.newInstance(getPsiElement()).getFullKey();
-    }
+    /**
+     * this method is called in super.constructor where key is not available yet
+     */
+    protected abstract String getKey();
 
     @NotNull
     @Override

@@ -1,23 +1,18 @@
 package com.github.letsdrink.intellijplugin.translation.rename;
 
-import com.github.letsdrink.intellijplugin.translation.TranslationHashElement;
-import com.github.letsdrink.intellijplugin.translation.TranslationUtils;
+import com.github.letsdrink.intellijplugin.PsiUtils;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.actionSystem.DataContext;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.refactoring.rename.RenameDialog;
 import com.intellij.refactoring.rename.RenameHandler;
-import com.jetbrains.php.lang.psi.elements.ArrayHashElement;
-import com.jetbrains.php.lang.psi.elements.StringLiteralExpression;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 
-public class TranslationKeyRenameHandler implements RenameHandler {
+public class TranslationKeyInCallRenameHandler implements RenameHandler {
     @Override
     public boolean isAvailableOnDataContext(DataContext dataContext) {
         final Editor editor = CommonDataKeys.EDITOR.getData(dataContext);
@@ -29,25 +24,15 @@ public class TranslationKeyRenameHandler implements RenameHandler {
         if (file == null) {
             return false;
         }
+        PsiElement element = getPsiElement(editor, file);
 
-        if (!TranslationUtils.isTranslationFile(file)) {
-            return false;
-        }
-
-        final ArrayHashElement element = getElement(file, editor);
-
-        return element.getValue() instanceof StringLiteralExpression;
+        return PsiUtils.isElementTheFirstParameterInFunctionCall(element, "t");
     }
 
-    @Nullable
-    private static ArrayHashElement getElement(PsiFile file, Editor editor) {
+    private PsiElement getPsiElement(Editor editor, PsiFile file) {
         PsiElement element = file.findElementAt(editor.getCaretModel().getCurrentCaret().getOffset());
-        if (element instanceof ArrayHashElement) {
-            return (ArrayHashElement) element;
-        }
-        return PsiTreeUtil.getParentOfType(element, ArrayHashElement.class);
+        return element.getParent();
     }
-
 
     @Override
     public boolean isRenaming(DataContext dataContext) {
@@ -56,15 +41,11 @@ public class TranslationKeyRenameHandler implements RenameHandler {
 
     @Override
     public void invoke(@NotNull Project project, Editor editor, PsiFile psiFile, DataContext dataContext) {
-        ArrayHashElement element = getElement(psiFile, editor);
-        if (element == null) {
-            return;
-        }
-
+        final PsiElement element = getPsiElement(editor, psiFile);
         RenameDialog.showRenameDialog(dataContext, new RenameTranslationKeyDialog(project, element, null, editor) {
             @Override
             protected String getKey() {
-                return TranslationHashElement.newInstance(getPsiElement()).getFullKey();
+                return PsiUtils.getContent(element);
             }
         });
     }
