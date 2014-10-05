@@ -24,10 +24,13 @@ public class TranslationParser {
     public void parse(PsiFile file, Handler handler) {
         Collection<PhpReturn> phpReturns = PsiTreeUtil.collectElementsOfType(file, PhpReturn.class);
         PhpReturn phpReturn = Iterables.getOnlyElement(phpReturns);
-        List<String> keyParts = new ArrayList<>();
-
         PsiElement root = phpReturn.getFirstPsiChild();
 
+        parse(root, handler);
+    }
+
+    public void parse(PsiElement root, Handler handler) {
+        List<String> keyParts = new ArrayList<>();
         parse(root, keyParts, handler);
     }
 

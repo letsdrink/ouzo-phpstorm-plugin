@@ -8,8 +8,8 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.jetbrains.php.lang.parser.PhpElementTypes;
 import com.jetbrains.php.lang.psi.elements.ArrayHashElement;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.github.letsdrink.intellijplugin.PsiUtils.getContent;
 
@@ -30,27 +30,6 @@ public class TranslationHashElement {
         return new TranslationHashElement(hashElement);
     }
 
-    public Collection<String> getChildrenFullKeys() {
-        LinkedList<String> children = new LinkedList<String>();
-        getChildrenFullKeys("", hashElement, children);
-        return children;
-    }
-
-    private void getChildrenFullKeys(String parentKey, ArrayHashElement element, Collection<String> children) {
-        if (!parentKey.isEmpty()) {
-            parentKey = parentKey + ".";
-        }
-        String fullKey = parentKey + getKey(element);
-
-        if (is(element.getValue(), PhpElementTypes.ARRAY_CREATION_EXPRESSION)) {
-            for (PsiElement psiElement : element.getValue().getChildren()) {
-                getChildrenFullKeys(fullKey, (ArrayHashElement) psiElement, children);
-            }
-        } else if (!parentKey.isEmpty()) {
-            children.add(fullKey);
-        }
-    }
-
     public String getFullKey() {
         StringBuilder sb = new StringBuilder();
         getFullKey(hashElement, sb);
@@ -60,11 +39,11 @@ public class TranslationHashElement {
     private void getFullKey(ArrayHashElement element, StringBuilder sb) {
         if (is(element.getParent(), PhpElementTypes.ARRAY_CREATION_EXPRESSION) && is(element.getParent().getParent().getParent(), PhpElementTypes.HASH_ARRAY_ELEMENT)) {
             getFullKey((ArrayHashElement) element.getParent().getParent().getParent(), sb);
-            if (sb.length() > 0) {
-                sb.append('.');
-            }
-            sb.append(getKey(element));
         }
+        if (sb.length() > 0) {
+            sb.append('.');
+        }
+        sb.append(getKey(element));
     }
 
     private String getKey(ArrayHashElement element) {
@@ -73,5 +52,23 @@ public class TranslationHashElement {
 
     private static boolean is(PsiElement element, IElementType type) {
         return PlatformPatterns.psiElement(type).accepts(element);
+    }
+
+    public ArrayHashElement getHashElement() {
+        return hashElement;
+    }
+
+    public List<ArrayHashElement> getChildrenHashElements() {
+        final List<ArrayHashElement> children = new ArrayList<>();
+        if (PlatformPatterns.psiElement(PhpElementTypes.ARRAY_CREATION_EXPRESSION).accepts(hashElement.getValue())) {
+            TranslationParser translationParser = new TranslationParser();
+            translationParser.parse(hashElement.getValue(), new TranslationParser.Handler() {
+                @Override
+                public void handle(String key, String text, ArrayHashElement element) {
+                    children.add(element);
+                }
+            });
+        }
+        return children;
     }
 }

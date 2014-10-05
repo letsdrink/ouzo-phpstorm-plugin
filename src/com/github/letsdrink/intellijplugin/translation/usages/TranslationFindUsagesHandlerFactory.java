@@ -2,7 +2,7 @@ package com.github.letsdrink.intellijplugin.translation.usages;
 
 
 import com.github.letsdrink.intellijplugin.PsiUtils;
-import com.github.letsdrink.intellijplugin.translation.TranslationFileFacade;
+import com.github.letsdrink.intellijplugin.translation.TranslationHashElement;
 import com.github.letsdrink.intellijplugin.translation.TranslationUtils;
 import com.intellij.find.findUsages.FindUsagesHandler;
 import com.intellij.find.findUsages.FindUsagesHandlerFactory;
@@ -18,6 +18,8 @@ import com.jetbrains.php.lang.psi.elements.ArrayHashElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 public class TranslationFindUsagesHandlerFactory extends FindUsagesHandlerFactory {
     @Override
     public boolean canFindUsages(@NotNull PsiElement psiElement) {
@@ -29,12 +31,20 @@ public class TranslationFindUsagesHandlerFactory extends FindUsagesHandlerFactor
     @Override
     public FindUsagesHandler createFindUsagesHandler(@NotNull final PsiElement psiElement, boolean forHighlightUsages) {
         return new FindUsagesHandler(psiElement) {
+            @NotNull
+            @Override
+            public PsiElement[] getSecondaryElements() {
+                TranslationHashElement translationHashElement = TranslationHashElement.newInstance(psiElement);
+                List<ArrayHashElement> children = translationHashElement.getChildrenHashElements();
+                return children.toArray(PsiElement.EMPTY_ARRAY);
+            }
+
             @Override
             public boolean processElementUsages(@NotNull final PsiElement psiElement, @NotNull Processor<UsageInfo> usageInfoProcessor, @NotNull FindUsagesOptions findUsagesOptions) {
                 UsageInfo[] usages = ApplicationManager.getApplication().runReadAction(new Computable<UsageInfo[]>() {
                     @Override
                     public UsageInfo[] compute() {
-                        String key = getKey(psiElement);
+                        String key = TranslationHashElement.newInstance(psiElement).getFullKey();
                         TranslationUsagesFinder usagesFinder = new TranslationUsagesFinder(key);
                         return usagesFinder.findUsages(psiElement.getProject());
                     }
@@ -45,13 +55,6 @@ public class TranslationFindUsagesHandlerFactory extends FindUsagesHandlerFactor
                 }
                 return true;
             }
-
-            private String getKey(PsiElement psiElement) {
-                ArrayHashElement hashElement = PsiTreeUtil.getParentOfType(psiElement, ArrayHashElement.class);
-
-                return TranslationFileFacade.getKey(hashElement);
-            }
-
         };
     }
 

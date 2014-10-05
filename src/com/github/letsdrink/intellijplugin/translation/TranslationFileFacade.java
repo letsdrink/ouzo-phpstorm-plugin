@@ -18,10 +18,7 @@ import com.jetbrains.php.lang.psi.elements.PhpPsiElement;
 import com.jetbrains.php.lang.psi.elements.PhpReturn;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static com.github.letsdrink.intellijplugin.PsiUtils.getContent;
 import static java.util.Arrays.asList;
@@ -105,27 +102,9 @@ public class TranslationFileFacade {
         return null;
     }
 
-
     public String getTranslation(String key) {
         ArrayHashElement translationElement = getTranslationElement(key);
         return translationElement != null ? getContent(translationElement.getValue()) : null;
-    }
-
-    public static String getKey(ArrayHashElement hashElement) {
-        LinkedList<String> keys = new LinkedList<String>();
-        keys.add(getContent(hashElement.getKey()));
-
-        ArrayHashElement element = hashElement;
-
-        while (is(element.getParent(), PhpElementTypes.ARRAY_CREATION_EXPRESSION) && is(element.getParent().getParent().getParent(), PhpElementTypes.HASH_ARRAY_ELEMENT)) {
-            element = (ArrayHashElement) element.getParent().getParent().getParent();
-            keys.addFirst(getContent(element.getKey()));
-        }
-        return Joiner.on(".").join(keys);
-    }
-
-    private static boolean is(PsiElement element, IElementType type) {
-        return PlatformPatterns.psiElement(type).accepts(element);
     }
 
     /*

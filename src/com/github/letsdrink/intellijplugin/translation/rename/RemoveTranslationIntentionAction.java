@@ -3,6 +3,7 @@ package com.github.letsdrink.intellijplugin.translation.rename;
 
 import com.github.letsdrink.intellijplugin.PsiUtils;
 import com.github.letsdrink.intellijplugin.translation.TranslationFileFacade;
+import com.github.letsdrink.intellijplugin.translation.TranslationHashElement;
 import com.github.letsdrink.intellijplugin.translation.TranslationRemoveUtils;
 import com.intellij.codeInsight.intention.PsiElementBaseIntentionAction;
 import com.intellij.openapi.application.Result;
@@ -27,7 +28,7 @@ public class RemoveTranslationIntentionAction extends PsiElementBaseIntentionAct
 
     @Override
     public void invoke(@NotNull Project project, final Editor editor, @NotNull final PsiElement psiElement) throws IncorrectOperationException {
-        final String key = new TranslationFileFacade(psiElement.getContainingFile()).getKey((ArrayHashElement) psiElement.getParent().getParent().getParent());
+        final String key = TranslationHashElement.newInstance(psiElement).getFullKey();
 
         final List<PsiElement> elementsToRemove = TranslationRemoveUtils.getElementToRemove(project, key);
 
