@@ -39,9 +39,7 @@ public class TranslationUsagesAction extends AnAction {
         if (hashElement == null) {
             return;
         }
-
-        TranslationFileFacade translationFileFacade = new TranslationFileFacade(psiFile);
-        String key = translationFileFacade.getKey(hashElement);
+        String key = TranslationFileFacade.getKey(hashElement);
 
         TranslationUsagesFinder translationUsagesFinder = new TranslationUsagesFinder(key);
         UsageInfo[] usageInfos = translationUsagesFinder.findUsages(project);

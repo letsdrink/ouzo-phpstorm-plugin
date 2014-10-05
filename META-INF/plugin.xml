@@ -60,6 +60,11 @@
         </intentionAction>
 
         <renameHandler implementation="com.github.letsdrink.intellijplugin.rename.TranslationKeyRenameHandler"/>
+
+        <findUsagesHandlerFactory implementation="com.github.letsdrink.intellijplugin.TranslationFindUsagesHandlerFactory" id="Ouzo" order="first, before php"/>
+        <usageTargetProvider implementation="com.github.letsdrink.intellijplugin.TranslationUsageTargetProvider" />
+
+        <elementDescriptionProvider implementation="com.github.letsdrink.intellijplugin.TranslationKeyDescriptionProvider" order="first" />
     </extensions>
 
     <depends>com.jetbrains.php</depends>

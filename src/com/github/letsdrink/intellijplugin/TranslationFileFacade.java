@@ -112,7 +112,7 @@ public class TranslationFileFacade {
         return translationElement != null ? getContent(translationElement.getValue()) : null;
     }
 
-    public String getKey(ArrayHashElement hashElement) {
+    public static String getKey(ArrayHashElement hashElement) {
         LinkedList<String> keys = new LinkedList<String>();
         keys.add(getContent(hashElement.getKey()));
 
@@ -125,7 +125,7 @@ public class TranslationFileFacade {
         return Joiner.on(".").join(keys);
     }
 
-    private boolean is(PsiElement element, IElementType type) {
+    private static boolean is(PsiElement element, IElementType type) {
         return PlatformPatterns.psiElement(type).accepts(element);
     }
 
