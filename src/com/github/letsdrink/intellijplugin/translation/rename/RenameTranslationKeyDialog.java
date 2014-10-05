@@ -1,7 +1,6 @@
 package com.github.letsdrink.intellijplugin.translation.rename;
 
 
-import com.github.letsdrink.intellijplugin.translation.TranslationFileFacade;
 import com.github.letsdrink.intellijplugin.translation.TranslationHashElement;
 import com.github.letsdrink.intellijplugin.translation.index.TranslationCallIndex;
 import com.intellij.openapi.editor.Editor;
