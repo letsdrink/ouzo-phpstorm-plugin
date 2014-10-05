@@ -6,17 +6,14 @@ import com.github.letsdrink.intellijplugin.TranslationUtils;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.refactoring.BaseRefactoringProcessor;
-import com.intellij.refactoring.rename.RenameViewDescriptor;
 import com.intellij.usageView.UsageInfo;
 import com.intellij.usageView.UsageViewDescriptor;
 import com.jetbrains.php.lang.psi.elements.ArrayHashElement;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 
@@ -34,11 +31,7 @@ class RenameTranslationProcessor extends BaseRefactoringProcessor {
     @NotNull
     @Override
     protected UsageViewDescriptor createUsageViewDescriptor(UsageInfo[] usageInfos) {
-        LinkedHashMap<PsiElement, String> psiElementStringLinkedHashMap = new LinkedHashMap<>();
-        for (UsageInfo usageInfo : usageInfos) {
-            psiElementStringLinkedHashMap.put(usageInfo.getElement(), newKey);
-        }
-        return new RenameViewDescriptor(psiElementStringLinkedHashMap);
+        return new TranslationKeyUsageViewDescriptor(oldKey, newKey);
     }
 
     @NotNull
@@ -85,4 +78,5 @@ class RenameTranslationProcessor extends BaseRefactoringProcessor {
     protected String getCommandName() {
         return "Rename translation";
     }
+
 }
