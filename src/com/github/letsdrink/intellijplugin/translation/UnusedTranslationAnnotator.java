@@ -3,7 +3,6 @@ package com.github.letsdrink.intellijplugin.translation;
 
 import com.github.letsdrink.intellijplugin.Settings;
 import com.github.letsdrink.intellijplugin.translation.index.TranslationCallIndex;
-import com.github.letsdrink.intellijplugin.translation.rename.RemoveTranslationIntentionAction;
 import com.intellij.lang.annotation.Annotation;
 import com.intellij.lang.annotation.AnnotationHolder;
 import com.intellij.lang.annotation.ExternalAnnotator;
