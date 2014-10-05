@@ -1,5 +1,6 @@
 package com.github.letsdrink.intellijplugin;
 
+import com.github.letsdrink.intellijplugin.translation.TranslationUtils;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertFalse;

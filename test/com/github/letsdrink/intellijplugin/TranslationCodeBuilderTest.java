@@ -1,5 +1,6 @@
 package com.github.letsdrink.intellijplugin;
 
+import com.github.letsdrink.intellijplugin.translation.TranslationCodeBuilder;
 import junit.framework.Assert;
 import org.junit.Test;
 

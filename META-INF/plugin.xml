@@ -39,7 +39,7 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <psi.referenceContributor implementation="com.github.letsdrink.intellijplugin.ControllerPsiReferenceContributor"/>
-        <psi.referenceContributor implementation="com.github.letsdrink.intellijplugin.TranslationPsiReferenceContributor"/>
+        <psi.referenceContributor implementation="com.github.letsdrink.intellijplugin.translation.TranslationPsiReferenceContributor"/>
         <psi.referenceContributor implementation="com.github.letsdrink.intellijplugin.PartialReferenceContributor"/>
         <psi.referenceContributor implementation="com.github.letsdrink.intellijplugin.ViewReferenceContributor"/>
 
@@ -48,30 +48,30 @@
 
         <gotoRelatedProvider implementation="com.github.letsdrink.intellijplugin.PhpGoToRelatedProvider"/>
 
-        <fileBasedIndex implementation="com.github.letsdrink.intellijplugin.index.TranslationCallIndex"/>
-        <fileBasedIndex implementation="com.github.letsdrink.intellijplugin.index.TranslationKeyIndex"/>
+        <fileBasedIndex implementation="com.github.letsdrink.intellijplugin.translation.index.TranslationCallIndex"/>
+        <fileBasedIndex implementation="com.github.letsdrink.intellijplugin.translation.index.TranslationKeyIndex"/>
 
-        <externalAnnotator language="PHP" implementationClass="com.github.letsdrink.intellijplugin.UnusedTranslationAnnotator"/>
-        <externalAnnotator language="PHP" implementationClass="com.github.letsdrink.intellijplugin.MissingTranslationAnnotator"/>
+        <externalAnnotator language="PHP" implementationClass="com.github.letsdrink.intellijplugin.translation.UnusedTranslationAnnotator"/>
+        <externalAnnotator language="PHP" implementationClass="com.github.letsdrink.intellijplugin.translation.MissingTranslationAnnotator"/>
 
-        <annotator language="PHP" implementationClass="com.github.letsdrink.intellijplugin.InvalidTranslationAnnotator"/>
+        <annotator language="PHP" implementationClass="com.github.letsdrink.intellijplugin.translation.InvalidTranslationAnnotator"/>
         <intentionAction>
-            <className>com.github.letsdrink.intellijplugin.EditTranslationIntentionAction</className>
+            <className>com.github.letsdrink.intellijplugin.translation.EditTranslationIntentionAction</className>
         </intentionAction>
 
-        <renameHandler implementation="com.github.letsdrink.intellijplugin.rename.TranslationKeyRenameHandler"/>
+        <renameHandler implementation="com.github.letsdrink.intellijplugin.translation.rename.TranslationKeyRenameHandler"/>
 
-        <findUsagesHandlerFactory implementation="com.github.letsdrink.intellijplugin.TranslationFindUsagesHandlerFactory" id="Ouzo" order="first, before php"/>
-        <usageTargetProvider implementation="com.github.letsdrink.intellijplugin.TranslationUsageTargetProvider" />
+        <findUsagesHandlerFactory implementation="com.github.letsdrink.intellijplugin.translation.usages.TranslationFindUsagesHandlerFactory" id="Ouzo" order="first, before php"/>
+        <usageTargetProvider implementation="com.github.letsdrink.intellijplugin.translation.usages.TranslationUsageTargetProvider" />
 
-        <elementDescriptionProvider implementation="com.github.letsdrink.intellijplugin.TranslationKeyDescriptionProvider" order="first" />
+        <elementDescriptionProvider implementation="com.github.letsdrink.intellijplugin.translation.usages.TranslationKeyDescriptionProvider" order="first" />
     </extensions>
 
     <depends>com.jetbrains.php</depends>
     <depends>com.intellij.modules.platform</depends>
 
     <actions>
-        <action id="ExtractTranslationAction" class="com.github.letsdrink.intellijplugin.ExtractTranslationAction"
+        <action id="ExtractTranslationAction" class="com.github.letsdrink.intellijplugin.translation.ExtractTranslationAction"
                 text="Extract translation" description="Extract translation">
             <add-to-group group-id="RefactoringMenu" anchor="last"/>
         </action>

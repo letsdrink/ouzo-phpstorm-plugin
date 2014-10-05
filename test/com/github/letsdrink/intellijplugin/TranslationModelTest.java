@@ -1,5 +1,7 @@
 package com.github.letsdrink.intellijplugin;
 
+import com.github.letsdrink.intellijplugin.translation.TranslationFileFacade;
+import com.github.letsdrink.intellijplugin.translation.TranslationModel;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 

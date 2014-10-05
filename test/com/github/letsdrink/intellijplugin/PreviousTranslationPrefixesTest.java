@@ -1,5 +1,6 @@
 package com.github.letsdrink.intellijplugin;
 
+import com.github.letsdrink.intellijplugin.translation.PreviousTranslationPrefixes;
 import org.junit.Test;
 
 import java.util.List;
