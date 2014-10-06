@@ -11,13 +11,13 @@ public class TranslationCodeBuilder {
 
         int level = keys.size() - missingKeys.size();
         for (String missingKey : missingKeys) {
-            appendTabs(sb, level);
+            appendIndent(sb, level);
             appendKey(sb, missingKey);
             sb.append("array(\n");
             level++;
         }
 
-        appendTabs(sb, level);
+        appendIndent(sb, level);
         appendKey(sb, Iterables.getLast(keys));
 
         sb.append("'");
@@ -28,7 +28,7 @@ public class TranslationCodeBuilder {
         for (String missingKey : missingKeys) {
             sb.append("\n");
 
-            appendTabs(sb, level);
+            appendIndent(sb, level);
             sb.append(")");
             level--;
         }
@@ -45,9 +45,9 @@ public class TranslationCodeBuilder {
         sb.append("' => ");
     }
 
-    private void appendTabs(StringBuilder sb, int count) {
+    private void appendIndent(StringBuilder sb, int count) {
         for (int i = 0; i < count; ++i) {
-            sb.append("\t");
+            sb.append("    ");
         }
     }
 

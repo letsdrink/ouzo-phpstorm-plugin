@@ -54,11 +54,11 @@ public class TranslationUtils {
     }
 
     public static boolean isTranslationFile(PsiFile file) {
-        return isTranslationFile(file.getVirtualFile());
+        return file != null && isTranslationFile(file.getVirtualFile());
     }
 
     public static boolean isTranslationFile(VirtualFile virtualFile) {
-        return virtualFile.getParent().getName().equals("locales");
+        return virtualFile != null && virtualFile.getParent().getName().equals("locales");
     }
 
     public static boolean isTranslationCall(FunctionReference call) {

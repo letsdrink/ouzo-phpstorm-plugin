@@ -12,7 +12,6 @@ import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.codeStyle.CodeStyleManager;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.jetbrains.php.lang.psi.elements.ArrayHashElement;
 import com.jetbrains.php.lang.psi.elements.PhpPsiElement;
@@ -151,7 +150,6 @@ public class TranslationFileFacade {
             String insertionText = translationCodeBuilder.getInsertionText(text, keys, missingKeys, translationArray.getChildren().length > 0);
             insert(getInsertionPosition(translationArray), insertionText);
         }
-        CodeStyleManager.getInstance(psiFile.getProject()).reformat(translationArray, true);
     }
 
     private PsiElement findDestinationArrayParent(List<String> keys, List<String> missingKeys) {
