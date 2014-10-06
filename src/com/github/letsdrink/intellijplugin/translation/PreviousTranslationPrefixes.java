@@ -1,8 +1,6 @@
 package com.github.letsdrink.intellijplugin.translation;
 
 
-import com.github.letsdrink.intellijplugin.translation.TranslationUtils;
-
 import java.util.LinkedList;
 import java.util.List;
 
@@ -18,7 +16,9 @@ public class PreviousTranslationPrefixes {
     }
 
     private void add(String parent) {
-        previous.addFirst(parent);
+        if (!previous.contains(parent)) {
+            previous.addFirst(parent);
+        }
         if (previous.size() > MAX_SIZE) {
             previous.pollLast();
         }
