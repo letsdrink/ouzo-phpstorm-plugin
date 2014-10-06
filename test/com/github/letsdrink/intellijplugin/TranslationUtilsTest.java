@@ -3,6 +3,7 @@ package com.github.letsdrink.intellijplugin;
 import com.github.letsdrink.intellijplugin.translation.TranslationUtils;
 import org.junit.Test;
 
+import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
@@ -18,5 +19,11 @@ public class TranslationUtilsTest {
 
         assertFalse(TranslationUtils.isParent("user.table.he", key));
         assertFalse(TranslationUtils.isParent("user.table.", key));
+    }
+
+    @Test
+    public void shouldLastKeyPart() {
+        assertEquals("key1", TranslationUtils.getLastKeyPart("prefix.key1"));
+        assertEquals("key1", TranslationUtils.getLastKeyPart("key1"));
     }
 }

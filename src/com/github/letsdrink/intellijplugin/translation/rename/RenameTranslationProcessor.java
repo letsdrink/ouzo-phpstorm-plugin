@@ -44,7 +44,7 @@ class RenameTranslationProcessor extends BaseRefactoringProcessor {
         for (TranslationFileFacade translationFileFacade : translationFileFacades) {
             ArrayHashElement translationElement = translationFileFacade.getTranslationElement(oldKey);
             if (translationElement != null) {
-                result.add(new RenameTranslationInLocaleUsageInfo(translationFileFacade, translationElement));
+                result.add(new RenameTranslationInLocaleUsageInfo(translationFileFacade, translationElement, oldKey));
             }
         }
 

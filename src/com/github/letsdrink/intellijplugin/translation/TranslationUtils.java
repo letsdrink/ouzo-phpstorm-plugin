@@ -74,4 +74,10 @@ public class TranslationUtils {
         }
         return parameter;
     }
+
+    public static String getLastKeyPart(String key) {
+        int lastDotIndex = key.lastIndexOf('.');
+        int beginIndex = lastDotIndex == -1 ? 0 : lastDotIndex + 1;
+        return key.substring(beginIndex);
+    }
 }
