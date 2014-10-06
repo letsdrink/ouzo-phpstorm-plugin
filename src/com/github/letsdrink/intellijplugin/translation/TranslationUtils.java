@@ -58,7 +58,7 @@ public class TranslationUtils {
     }
 
     public static boolean isTranslationFile(VirtualFile virtualFile) {
-        return virtualFile != null && virtualFile.getParent().getName().equals("locales");
+        return virtualFile != null && virtualFile.getParent() != null && "locales".equals(virtualFile.getParent().getName());
     }
 
     public static boolean isTranslationCall(FunctionReference call) {
