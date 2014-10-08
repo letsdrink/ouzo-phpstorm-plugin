@@ -1,7 +1,7 @@
 <idea-plugin version="2" url="https://github.com/letsdrink/ouzo-phpstorm-plugin">
     <id>com.github.letsdrink.intellijplugin</id>
     <name>Ouzo framework plugin</name>
-    <version>1.5.3</version>
+    <version>1.6.0</version>
     <vendor email="ouzo-framework@googlegroups.com" url="http://ouzoframework.org/">Ouzo contributors</vendor>
 
     <description><![CDATA[
@@ -28,6 +28,7 @@
     <li>Show all usages of a translation key</li>
     <li>Remove unused translation intention action</li>
     <li>Rename refactoring for translation keys</li>
+    <li>Translation key completion</li>
 </ul>
     ]]></description>
 
@@ -66,6 +67,8 @@
         <usageTargetProvider implementation="com.github.letsdrink.intellijplugin.translation.usages.TranslationUsageTargetProvider" />
 
         <elementDescriptionProvider implementation="com.github.letsdrink.intellijplugin.translation.usages.TranslationKeyDescriptionProvider" order="first" />
+
+        <completion.contributor language="PHP" implementationClass="com.github.letsdrink.intellijplugin.translation.TranslationKeyCompletionContributor"/>
     </extensions>
 
     <depends>com.jetbrains.php</depends>
