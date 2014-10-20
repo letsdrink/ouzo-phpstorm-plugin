@@ -39,6 +39,9 @@ public class TranslationParser {
             if (psiElement instanceof ArrayHashElement) {
                 ArrayHashElement hashElement = (ArrayHashElement) psiElement;
                 String key = PsiUtils.getContent(hashElement.getKey());
+                if (key == null) {
+                    throw new IllegalStateException("Unsupported key element: " + hashElement.getKey().getClass());
+                }
                 keyParts.add(key);
 
                 if (PlatformPatterns.psiElement(PhpElementTypes.ARRAY_CREATION_EXPRESSION).accepts(hashElement.getValue())) {

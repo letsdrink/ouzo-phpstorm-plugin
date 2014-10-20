@@ -21,7 +21,7 @@ public class PsiUtils {
             return value.getText();
         }
 
-        if (value instanceof ConstantReferenceImpl) {
+        if (value instanceof ConstantReference || value instanceof ClassConstantReference) {
             return value.getText(); //we cannot resolve constant value when this method is called from index because indices are not accessible then.
         }
         return null;
