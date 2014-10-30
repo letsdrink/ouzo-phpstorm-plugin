@@ -30,6 +30,9 @@ public class OuzoUtils {
     public static final String OUZO_ROUTE_DELETE_FQN = "\\Ouzo\\Routing\\Route.delete";
     public static final String OUZO_ROUTE_PUT_FQN = "\\Ouzo\\Routing\\Route.put";
 
+    public static final String OUZO_MODEL_FQN = "\\Ouzo\\Model";
+    public static final String OUZO_MODEL_NAMESPACE = "\\Model\\";
+
     public static boolean isInViewDir(PsiFile file) {
         VirtualFile ouzoProjectRoot = Settings.getInstance(file.getProject()).getOuzoProjectRoot();
         String relativePath = VfsUtil.getRelativePath(file.getVirtualFile(), ouzoProjectRoot, '/');

@@ -1,7 +1,7 @@
 <idea-plugin version="2" url="https://github.com/letsdrink/ouzo-phpstorm-plugin">
     <id>com.github.letsdrink.intellijplugin</id>
     <name>Ouzo framework plugin</name>
-    <version>1.6.1</version>
+    <version>1.6.2</version>
     <vendor email="ouzo-framework@googlegroups.com" url="http://ouzoframework.org/">Ouzo contributors</vendor>
 
     <description><![CDATA[
@@ -19,6 +19,7 @@
     <li>References for controllers and actions in routes</li>
     <li>References for views</li>
     <li>References for partials</li>
+    <li>References for models in relation definition</li>
     <li>Navigation from Controllers actions to corresponding views (with 'Go To/Ouzo View' and 'Navigate/Related symbol' (Ctrl+Alt+Home))</li>
     <li>Annotate unused translations</li>
     <li>Annotate invalid entries in translation files</li>
@@ -43,6 +44,7 @@
         <psi.referenceContributor implementation="com.github.letsdrink.intellijplugin.translation.TranslationPsiReferenceContributor"/>
         <psi.referenceContributor implementation="com.github.letsdrink.intellijplugin.PartialReferenceContributor"/>
         <psi.referenceContributor implementation="com.github.letsdrink.intellijplugin.ViewReferenceContributor"/>
+        <psi.referenceContributor implementation="com.github.letsdrink.intellijplugin.RelationClassPsiReferenceContributor"/>
 
         <projectConfigurable instance="com.github.letsdrink.intellijplugin.SettingsForm" id="Ouzo.SettingsForm" displayName="Ouzo"/>
         <projectService serviceImplementation="com.github.letsdrink.intellijplugin.Settings"/>
