@@ -1,7 +1,7 @@
 <idea-plugin version="2" url="https://github.com/letsdrink/ouzo-phpstorm-plugin">
     <id>com.github.letsdrink.intellijplugin</id>
     <name>Ouzo framework plugin</name>
-    <version>1.6.2</version>
+    <version>1.6.3</version>
     <vendor email="ouzo-framework@googlegroups.com" url="http://ouzoframework.org/">Ouzo contributors</vendor>
 
     <description><![CDATA[

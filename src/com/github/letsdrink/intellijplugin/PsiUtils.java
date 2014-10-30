@@ -121,4 +121,15 @@ public class PsiUtils {
             type = element.getNode().getElementType();
         } while (element.isValid() && (type == PhpElementTypes.WHITE_SPACE || type == PhpTokenTypes.opCOMMA));
     }
+
+    public static boolean isInstanceOf(PhpClass aClass, String baseClassFQN) {
+        PhpClass baseClass = aClass.getSuperClass();
+        while (baseClass != null) {
+            if (baseClassFQN.equals(baseClass.getFQN())) {
+                return true;
+            }
+            baseClass = baseClass.getSuperClass();
+        }
+        return false;
+    }
 }

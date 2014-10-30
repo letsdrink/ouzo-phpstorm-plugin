@@ -11,7 +11,6 @@ import com.intellij.util.ProcessingContext;
 import com.jetbrains.php.PhpIndex;
 import com.jetbrains.php.lang.parser.PhpElementTypes;
 import com.jetbrains.php.lang.psi.elements.ArrayHashElement;
-import com.jetbrains.php.lang.psi.elements.ClassReference;
 import com.jetbrains.php.lang.psi.elements.PhpClass;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,8 +23,7 @@ class RelationClassReferenceProvider extends PsiReferenceProvider {
         if (containingClass == null) {
             return false;
         }
-        ClassReference baseClass = containingClass.getExtendsList().getReferenceElement();
-        if (baseClass == null || !baseClass.getFQN().equals(OuzoUtils.OUZO_MODEL_FQN)) {
+        if (!PsiUtils.isInstanceOf(containingClass, OuzoUtils.OUZO_MODEL_FQN)) {
             return false;
         }
 
