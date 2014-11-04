@@ -39,13 +39,7 @@ class ControllerActionReferenceProvider extends PsiReferenceProvider {
         String controller = extractController(PsiUtils.getContent(psiElement));
         String action = extractAction(PsiUtils.getContent(psiElement));
 
-        PhpIndex phpIndex = PhpIndex.getInstance(psiElement.getProject());
-        Collection<PhpClass> phpClasses = phpIndex.getClassesByFQN(controller);
-
-        PhpClass phpClass = Iterables.getLast(phpClasses, null);
-        Optional<Method> classMethod = PhpIndexUtils.getClassMethod(phpClass, action);
-
-        PsiReferenceBase.Immediate reference = new PsiReferenceBase.Immediate(psiElement, classMethod.isPresent() ? classMethod.get() : phpClass);
+        PsiReferenceBase.Immediate reference = new PsiReferenceBase.Immediate(psiElement, OuzoUtils.getControllerAction(psiElement.getProject(), controller, action));
         return new PsiReference[]{reference};
     }
 

@@ -1,6 +1,7 @@
 package com.github.letsdrink.intellijplugin;
 
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.base.Predicates;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Iterables;
@@ -11,6 +12,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.jetbrains.php.PhpIndex;
 import com.jetbrains.php.lang.PhpLanguage;
 import com.jetbrains.php.lang.psi.elements.Method;
 import com.jetbrains.php.lang.psi.elements.MethodReference;
@@ -89,5 +91,17 @@ public class OuzoUtils {
 
     public static boolean isExpectedFile(PsiElement psiElement, String filename) {
         return PsiUtils.getContainingFilename(psiElement).equals(filename);
+    }
+
+    public static PsiElement getControllerAction(Project project, String controller, String action) {
+        PhpIndex phpIndex = PhpIndex.getInstance(project);
+        Collection<PhpClass> phpClasses = phpIndex.getClassesByFQN(controller);
+
+        PhpClass phpClass = Iterables.getLast(phpClasses, null);
+        if (phpClass == null) {
+            return null;
+        }
+        Optional<Method> classMethod = PhpIndexUtils.getClassMethod(phpClass, action);
+        return classMethod.isPresent() ? classMethod.get() : phpClass;
     }
 }
