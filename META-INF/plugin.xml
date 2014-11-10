@@ -87,5 +87,9 @@
             <add-to-group group-id="GoToTargetEx"/>
             <add-to-group group-id="EditorPopupMenu.GoTo"/>
         </action>
+
+        <action id="ExtractPartial" class="com.github.letsdrink.intellijplugin.ExtractPartialAction" text="Extract partial">
+            <add-to-group group-id="RefactoringMenu" anchor="last"/>
+        </action>
     </actions>
 </idea-plugin>
