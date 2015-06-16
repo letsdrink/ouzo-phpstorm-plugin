@@ -1,7 +1,7 @@
 <idea-plugin version="2" url="https://github.com/letsdrink/ouzo-phpstorm-plugin">
     <id>com.github.letsdrink.intellijplugin</id>
     <name>Ouzo framework plugin</name>
-    <version>1.6.4</version>
+    <version>1.6.5</version>
     <vendor email="ouzo-framework@googlegroups.com" url="http://ouzoframework.org/">Ouzo contributors</vendor>
 
     <description><![CDATA[
@@ -11,9 +11,15 @@
 <a href="http://ouzoframework.org/">ouzoframework.org</a>
 <br/>
 
+<h2>What's new:</h2>
+<ul>
+    <li>Translation extraction action for twig</li>
+</ul>
+
 <h2>Features:</h2>
 
 <ul>
+    <li>Translation extraction action for twig</li>
     <li>Translation extraction action</li>
     <li>References for translation keys</li>
     <li>References for controllers and actions in routes</li>
