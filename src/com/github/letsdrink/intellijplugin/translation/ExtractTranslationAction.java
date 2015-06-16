@@ -1,6 +1,5 @@
 package com.github.letsdrink.intellijplugin.translation;
 
-import com.github.letsdrink.intellijplugin.OuzoUtils;
 import com.github.letsdrink.intellijplugin.PsiUtils;
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
@@ -15,12 +14,10 @@ import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.TextRange;
-import com.intellij.patterns.PlatformPatterns;
 import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.tree.IElementType;
-import com.intellij.psi.xml.XmlTokenType;
 import com.jetbrains.php.lang.parser.PhpElementTypes;
 import com.jetbrains.php.lang.psi.elements.StringLiteralExpression;
 import org.apache.commons.lang.StringUtils;
@@ -33,6 +30,9 @@ import static java.util.Arrays.asList;
 
 public class ExtractTranslationAction extends AnAction {
     private static PreviousTranslationPrefixes previousPrefixes = new PreviousTranslationPrefixes();
+
+    ElementTypeResolver typeResolver = new ElementTypeResolver();
+    TranslationContentCreator translationContentCreator = new TranslationContentCreator(typeResolver);
 
     public ExtractTranslationAction() {
         super("ExtractTranslation");
@@ -91,31 +91,20 @@ public class ExtractTranslationAction extends AnAction {
         if (psiElement instanceof StringLiteralExpression) {
             return ((StringLiteralExpression) psiElement).getContents().trim();
         }
-        if (isJsLiteral(psiElement.getNode().getElementType())) {
+        if (typeResolver.isJsLiteral(psiElement.getNode().getElementType())) {
             return StringUtils.strip(psiElement.getText().trim(), "\"'");
         }
         return psiElement.getText().trim();
     }
 
-    private void replaceTextWithTranslation(final String key, final PsiElement finalPsiElement, final Editor editor) {
-        PsiDocumentManager.getInstance(finalPsiElement.getProject()).doPostponedOperationsAndUnblockDocument(editor.getDocument());
-        final TextRange range = finalPsiElement.getTextRange();
-        new WriteCommandAction(finalPsiElement.getProject()) {
+    private void replaceTextWithTranslation(final String key, final PsiElement psiElement, final Editor editor) {
+        PsiDocumentManager.getInstance(psiElement.getProject()).doPostponedOperationsAndUnblockDocument(editor.getDocument());
+        final TextRange range = psiElement.getTextRange();
+        new WriteCommandAction(psiElement.getProject()) {
             @Override
             protected void run(Result result) throws Throwable {
-                String insertString = "t('" + key + "')";
+                String insertString = translationContentCreator.buildTranslation(key, psiElement);
 
-                PsiFile file = finalPsiElement.getContainingFile();
-                if (!OuzoUtils.isInViewDir(file)) {
-                    insertString = "I18n::" + insertString;
-                }
-
-                if (!isPhpString(finalPsiElement)) {
-                    insertString = "<?= " + insertString + "?>";
-                }
-                if (isJsLiteral(finalPsiElement.getNode().getElementType())) {
-                    insertString = "'" + insertString + "'";
-                }
                 editor.getDocument().replaceString(range.getStartOffset(), range.getEndOffset(), insertString);
                 editor.getCaretModel().moveToOffset(range.getStartOffset());
             }
@@ -129,18 +118,8 @@ public class ExtractTranslationAction extends AnAction {
 
     private boolean isTypeSupported(PsiElement psiElement) {
         IElementType elementType = psiElement.getNode().getElementType();
-        return isXmlText(elementType) || elementType.toString().equals("XML_TEXT") || isJsLiteral(elementType) || isPhpString(psiElement.getParent()) || elementType.equals(PhpElementTypes.WHITE_SPACE);
-    }
-
-    private boolean isPhpString(PsiElement psiElement) {
-        return PlatformPatterns.psiElement(PhpElementTypes.STRING).accepts(psiElement);
-    }
-
-    private boolean isXmlText(IElementType elementType) {
-        return elementType == XmlTokenType.XML_DATA_CHARACTERS || elementType == XmlTokenType.XML_ATTRIBUTE_VALUE_TOKEN;
-    }
-
-    private boolean isJsLiteral(IElementType elementType) {
-        return elementType.toString().equals("JS:STRING_LITERAL") || "JS:LITERAL_EXPRESSION".equals(elementType.toString());
+        return typeResolver.isXmlText(elementType) ||
+                typeResolver.isJsLiteral(elementType) ||
+                typeResolver.isPhpString(psiElement.getParent()) || elementType.equals(PhpElementTypes.WHITE_SPACE);
     }
 }
