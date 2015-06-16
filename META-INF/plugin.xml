@@ -75,6 +75,7 @@
     </extensions>
 
     <depends>com.jetbrains.php</depends>
+    <depends>com.jetbrains.twig</depends>
     <depends>com.intellij.modules.platform</depends>
 
     <actions>

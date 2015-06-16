@@ -48,7 +48,7 @@ public class ExtractTranslationAction extends AnAction {
             return;
         }
 
-        if (Iterables.all(asList(psiElement.getParent().getChildren()), isSupportedPredicate())) {
+        if (psiElement.getParent().getChildren().length > 0 && Iterables.all(asList(psiElement.getParent().getChildren()), isXmlText())) {
             psiElement = psiElement.getParent();
         }
 
@@ -78,11 +78,11 @@ public class ExtractTranslationAction extends AnAction {
         dialog.showDialog();
     }
 
-    private Predicate<PsiElement> isSupportedPredicate() {
+    private Predicate<PsiElement> isXmlText() {
         return new Predicate<PsiElement>() {
             @Override
             public boolean apply(@Nullable PsiElement psiElement) {
-                return isTypeSupported(psiElement);
+                return typeResolver.isXmlText(psiElement);
             }
         };
     }
@@ -105,8 +105,16 @@ public class ExtractTranslationAction extends AnAction {
             protected void run(Result result) throws Throwable {
                 String insertString = translationContentCreator.buildTranslation(key, psiElement);
 
-                editor.getDocument().replaceString(range.getStartOffset(), range.getEndOffset(), insertString);
-                editor.getCaretModel().moveToOffset(range.getStartOffset());
+                int startOffset = range.getStartOffset();
+                int endOffset = range.getEndOffset();
+
+                if (typeResolver.isTwigLiteral(psiElement)) {
+                    startOffset--; //for quotes
+                    endOffset++;
+                }
+
+                editor.getDocument().replaceString(startOffset, endOffset, insertString);
+                editor.getCaretModel().moveToOffset(startOffset);
             }
 
             @Override
@@ -120,6 +128,8 @@ public class ExtractTranslationAction extends AnAction {
         IElementType elementType = psiElement.getNode().getElementType();
         return typeResolver.isXmlText(elementType) ||
                 typeResolver.isJsLiteral(elementType) ||
-                typeResolver.isPhpString(psiElement.getParent()) || elementType.equals(PhpElementTypes.WHITE_SPACE);
+                typeResolver.isPhpString(psiElement.getParent()) ||
+                typeResolver.isTwigLiteral(psiElement) ||
+                elementType.equals(PhpElementTypes.WHITE_SPACE);
     }
 }

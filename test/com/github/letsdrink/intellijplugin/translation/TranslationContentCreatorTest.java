@@ -2,34 +2,27 @@ package com.github.letsdrink.intellijplugin.translation;
 
 import com.intellij.lang.javascript.JavascriptLanguage;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiFile;
 import com.jetbrains.php.lang.PhpLanguage;
-import org.junit.Before;
+import com.jetbrains.twig.TwigLanguage;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 
 public class TranslationContentCreatorTest {
     PsiElement psiElement = mock(PsiElement.class);
-    PsiFile psiFile = mock(PsiFile.class);
 
     ElementTypeResolver typeResolver = mock(ElementTypeResolver.class);
 
     TranslationContentCreator contentCreator = new TranslationContentCreator(typeResolver);
 
-    @Before
-    public void setUp() throws Exception {
-        when(psiElement.getContainingFile()).thenReturn(psiFile);
-    }
-
     @Test
     public void shouldBuildTranslationForJavascriptStringInPhpFile() {
         //given
         when(typeResolver.isJsLiteral(psiElement)).thenReturn(true);
-        when(psiFile.getLanguage()).thenReturn(PhpLanguage.INSTANCE);
+        when(typeResolver.getFileLanguage(psiElement)).thenReturn(PhpLanguage.INSTANCE);
 
         //when
         String content = contentCreator.buildTranslation("key", psiElement);
@@ -42,7 +35,7 @@ public class TranslationContentCreatorTest {
     public void shouldBuildTranslationForHtmlInPhpFile() {
         //given
         when(typeResolver.isXmlText(psiElement)).thenReturn(true);
-        when(psiFile.getLanguage()).thenReturn(PhpLanguage.INSTANCE);
+        when(typeResolver.getFileLanguage(psiElement)).thenReturn(PhpLanguage.INSTANCE);
 
         //when
         String content = contentCreator.buildTranslation("key", psiElement);
@@ -56,7 +49,7 @@ public class TranslationContentCreatorTest {
         //given
         when(typeResolver.isXmlText(psiElement)).thenReturn(true);
         when(typeResolver.isInView(psiElement)).thenReturn(true);
-        when(psiFile.getLanguage()).thenReturn(PhpLanguage.INSTANCE);
+        when(typeResolver.getFileLanguage(psiElement)).thenReturn(PhpLanguage.INSTANCE);
 
         //when
         String content = contentCreator.buildTranslation("key", psiElement);
@@ -69,7 +62,7 @@ public class TranslationContentCreatorTest {
     public void shouldBuildTranslationForJavascriptStringInJsFile() {
         //given
         when(typeResolver.isJsLiteral(psiElement)).thenReturn(true);
-        when(psiFile.getLanguage()).thenReturn(JavascriptLanguage.INSTANCE);
+        when(typeResolver.getFileLanguage(psiElement)).thenReturn(JavascriptLanguage.INSTANCE);
 
         //when
         String content = contentCreator.buildTranslation("key", psiElement);
@@ -82,7 +75,7 @@ public class TranslationContentCreatorTest {
     public void shouldBuildTranslationForPhpString() {
         //given
         when(typeResolver.isPhpString(psiElement)).thenReturn(true);
-        when(psiFile.getLanguage()).thenReturn(PhpLanguage.INSTANCE);
+        when(typeResolver.getFileLanguage(psiElement)).thenReturn(PhpLanguage.INSTANCE);
 
         //when
         String content = contentCreator.buildTranslation("key", psiElement);
@@ -96,12 +89,41 @@ public class TranslationContentCreatorTest {
         //given
         when(typeResolver.isPhpString(psiElement)).thenReturn(true);
         when(typeResolver.isInView(psiElement)).thenReturn(true);
-        when(psiFile.getLanguage()).thenReturn(PhpLanguage.INSTANCE);
+        when(typeResolver.getFileLanguage(psiElement)).thenReturn(PhpLanguage.INSTANCE);
+
 
         //when
         String content = contentCreator.buildTranslation("key", psiElement);
 
         //then
         assertEquals("t('key')", content);
+    }
+
+    @Test
+    public void shouldBuildTranslationForTwigStringInViewFile() {
+        //given
+        when(typeResolver.isTwigLiteral(psiElement)).thenReturn(true);
+        when(typeResolver.isInView(psiElement)).thenReturn(true);
+        when(typeResolver.getFileLanguage(psiElement)).thenReturn(TwigLanguage.INSTANCE);
+
+        //when
+        String content = contentCreator.buildTranslation("key", psiElement);
+
+        //then
+        assertEquals("t('key')", content);
+    }
+
+    @Test
+    public void shouldBuildTranslationForTwigHtmlInViewFile() {
+        //given
+        when(typeResolver.isTwigLiteral(psiElement)).thenReturn(false);
+        when(typeResolver.isInView(psiElement)).thenReturn(true);
+        when(typeResolver.getFileLanguage(psiElement)).thenReturn(TwigLanguage.INSTANCE);
+
+        //when
+        String content = contentCreator.buildTranslation("key", psiElement);
+
+        //then
+        assertEquals("{{ t('key') }}", content);
     }
 }
