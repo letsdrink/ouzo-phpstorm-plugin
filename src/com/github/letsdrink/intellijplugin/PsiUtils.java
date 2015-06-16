@@ -4,16 +4,13 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiReference;
-import com.intellij.psi.PsiWhiteSpace;
 import com.intellij.psi.tree.IElementType;
 import com.jetbrains.php.lang.lexer.PhpTokenTypes;
 import com.jetbrains.php.lang.parser.PhpElementTypes;
 import com.jetbrains.php.lang.psi.elements.*;
+import com.jetbrains.php.lang.psi.elements.impl.ConstantReferenceImpl;
 import com.jetbrains.php.lang.psi.elements.impl.PhpExpressionImpl;
 import com.jetbrains.php.lang.psi.resolve.types.PhpType;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class PsiUtils {
     public static String getContent(PsiElement value) {
@@ -134,33 +131,5 @@ public class PsiUtils {
             baseClass = baseClass.getSuperClass();
         }
         return false;
-    }
-
-    static List<PsiElement> elementsInRange(PsiFile psiFile, int startOffset, int endOffset) {
-        List<PsiElement> selectedElements = new ArrayList<>();
-
-        PsiElement startElement = psiFile.findElementAt(startOffset);
-        PsiElement endElement = psiFile.findElementAt(endOffset);
-
-
-        if (startElement instanceof PsiWhiteSpace) {
-            startOffset = startElement.getTextRange().getEndOffset();
-            startElement = psiFile.findElementAt(startOffset);
-        }
-        if (endElement instanceof PsiWhiteSpace) {
-            endOffset = endElement.getTextRange().getStartOffset();
-            endElement = psiFile.findElementAt(endOffset - 1);
-        }
-        if (startElement == null || endElement == null) return selectedElements;
-
-
-        PsiElement nextSibling = startElement;
-        while (!endElement.equals(nextSibling) && nextSibling != null) {
-            selectedElements.add(nextSibling);
-            nextSibling = nextSibling.getNextSibling();
-        }
-        selectedElements.add(endElement);
-
-        return selectedElements;
     }
 }
