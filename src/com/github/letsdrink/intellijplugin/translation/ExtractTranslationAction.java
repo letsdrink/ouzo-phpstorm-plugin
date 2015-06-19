@@ -18,6 +18,7 @@ import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.tree.IElementType;
+import com.jetbrains.php.lang.lexer.PhpTokenTypes;
 import com.jetbrains.php.lang.parser.PhpElementTypes;
 import com.jetbrains.php.lang.psi.elements.StringLiteralExpression;
 import org.apache.commons.lang.StringUtils;
@@ -48,7 +49,7 @@ public class ExtractTranslationAction extends AnAction {
             return;
         }
 
-        if (psiElement.getParent().getChildren().length > 0 && Iterables.all(asList(psiElement.getParent().getChildren()), isXmlText())) {
+        if (areAllParentChildrenSupported(psiElement) || isStringLiteral(psiElement)) {
             psiElement = psiElement.getParent();
         }
 
@@ -76,6 +77,15 @@ public class ExtractTranslationAction extends AnAction {
             }
         });
         dialog.showDialog();
+    }
+
+    private boolean isStringLiteral(PsiElement psiElement) {
+        IElementType elementType = psiElement.getNode().getElementType();
+        return PhpTokenTypes.STRING_LITERAL_SINGLE_QUOTE.equals(elementType) || PhpTokenTypes.STRING_LITERAL.equals(elementType);
+    }
+
+    private boolean areAllParentChildrenSupported(PsiElement psiElement) {
+        return psiElement.getParent().getChildren().length > 0 && Iterables.all(asList(psiElement.getParent().getChildren()), isXmlText());
     }
 
     private Predicate<PsiElement> isXmlText() {
