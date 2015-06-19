@@ -79,6 +79,7 @@
         <elementDescriptionProvider implementation="com.github.letsdrink.intellijplugin.translation.usages.TranslationKeyDescriptionProvider" order="first" />
 
         <completion.contributor language="PHP" implementationClass="com.github.letsdrink.intellijplugin.translation.TranslationKeyCompletionContributor"/>
+        <completion.contributor language="PHP" implementationClass="com.github.letsdrink.intellijplugin.model.ModelAttributesCompletionContributor"/>
     </extensions>
 
     <depends>com.jetbrains.php</depends>
