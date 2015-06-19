@@ -5,12 +5,16 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.tree.IElementType;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.jetbrains.php.lang.lexer.PhpTokenTypes;
 import com.jetbrains.php.lang.parser.PhpElementTypes;
 import com.jetbrains.php.lang.psi.elements.*;
-import com.jetbrains.php.lang.psi.elements.impl.ConstantReferenceImpl;
 import com.jetbrains.php.lang.psi.elements.impl.PhpExpressionImpl;
 import com.jetbrains.php.lang.psi.resolve.types.PhpType;
+
+import java.util.Set;
+
+import static com.google.common.collect.Sets.newHashSet;
 
 public class PsiUtils {
     public static String getContent(PsiElement value) {
@@ -131,5 +135,17 @@ public class PsiUtils {
             baseClass = baseClass.getSuperClass();
         }
         return false;
+    }
+
+    public static Set<String> getKeys(ArrayCreationExpression arrayCreation) {
+        Set<String> keys = newHashSet();
+        ArrayHashElement[] hashElements = PsiTreeUtil.getChildrenOfType(arrayCreation, ArrayHashElement.class);
+        if (hashElements == null) {
+            return keys;
+        }
+        for (ArrayHashElement hashElement : hashElements) {
+            keys.add(PsiUtils.getContent(hashElement.getKey()));
+        }
+        return keys;
     }
 }

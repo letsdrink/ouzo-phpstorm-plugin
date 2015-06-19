@@ -1,7 +1,7 @@
 <idea-plugin version="2" url="https://github.com/letsdrink/ouzo-phpstorm-plugin">
     <id>com.github.letsdrink.intellijplugin</id>
     <name>Ouzo framework plugin</name>
-    <version>1.6.6</version>
+    <version>1.6.7</version>
     <vendor email="ouzo-framework@googlegroups.com" url="http://ouzoframework.org/">Ouzo contributors</vendor>
 
     <description><![CDATA[
@@ -13,13 +13,14 @@
 
 <h2>What's new:</h2>
 <ul>
-    <li>Fixed translation extraction action</li>
+    <li>Added completion for array keys in Models constructor and create, createNoValidation, newInstance, assignAttributes and updateAttributes methods based on Models @property tags</li>
 </ul>
 <br/>
 <br/>
 <h2>Features:</h2>
 
 <ul>
+    <li>Completion for array keys in constructor and create, createNoValidation, newInstance, assignAttributes and updateAttributes Model's methods based on Models @property tags</li>
     <li>Translation extraction action for twig</li>
     <li>Translation extraction action</li>
     <li>References for translation keys</li>
