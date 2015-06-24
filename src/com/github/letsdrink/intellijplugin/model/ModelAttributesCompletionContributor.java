@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Set;
 
 public class ModelAttributesCompletionContributor extends CompletionContributor {
-    private final static ImmutableSet<String> SUPPORTED_METHODS = ImmutableSet.of("create", "createNoValidation", "newInstance", "assignAttributes", "updateAttributes");
+    private final static ImmutableSet<String> SUPPORTED_METHODS = ImmutableSet.of("create", "createNoValidation", "newInstance", "assignAttributes", "updateAttributes", "where", "count");
     private final static ImmutableSet<String> SUPPORTED_TYPES = ImmutableSet.of("int", "integer", "string", "bool", "mixed", "boolean", "float");
 
     @Override
