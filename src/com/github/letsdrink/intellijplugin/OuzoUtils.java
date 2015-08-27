@@ -38,11 +38,14 @@ public class OuzoUtils {
     public static boolean isInViewDir(PsiFile file) {
         VirtualFile ouzoProjectRoot = Settings.getInstance(file.getProject()).getOuzoProjectRoot();
         String relativePath = VfsUtil.getRelativePath(file.getVirtualFile(), ouzoProjectRoot, '/');
-        return relativePath != null && relativePath.startsWith("application/view");
+        return relativePath != null && (relativePath.startsWith("application/view") || relativePath.startsWith("Application/View") );
     }
 
     public static PsiFile getViewPsiFile(Project project, String viewName) {
         VirtualFile virtualFile = Settings.getInstance(project).getOuzoProjectRoot().findFileByRelativePath("/application/view/" + viewName + ".phtml");
+        if (virtualFile == null) {
+            virtualFile = Settings.getInstance(project).getOuzoProjectRoot().findFileByRelativePath("/Application/View/" + viewName + ".phtml");
+        }
         if (virtualFile == null) {
             return null;
         }
@@ -60,7 +63,7 @@ public class OuzoUtils {
 
         PhpClass controllerClass = containingMethod.getContainingClass();
 
-        if (containingMethod == null || !controllerClass.getName().endsWith("Controller")) {
+        if (controllerClass == null || !controllerClass.getName().endsWith("Controller")) {
             return Collections.emptyList();
         }
 
