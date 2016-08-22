@@ -1,20 +1,13 @@
 package com.github.letsdrink.intellijplugin;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.Iterables;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.PsiReferenceBase;
 import com.intellij.psi.PsiReferenceProvider;
 import com.intellij.util.ProcessingContext;
-import com.jetbrains.php.PhpIndex;
-import com.jetbrains.php.lang.psi.elements.Method;
-import com.jetbrains.php.lang.psi.elements.PhpClass;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Collection;
 
 
 class ControllerActionReferenceProvider extends PsiReferenceProvider {
@@ -47,7 +40,7 @@ class ControllerActionReferenceProvider extends PsiReferenceProvider {
         if (controller.contains("#")) {
             controller = controller.split("#")[0];
         }
-        return "Controller\\" + prepareNamespace(underscoreToCamelCase(controller)) + "Controller";
+        return prepareNamespace(underscoreToCamelCase(controller)) + "Controller";
     }
 
     private String underscoreToCamelCase(String text) {

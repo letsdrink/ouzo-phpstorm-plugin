@@ -27,6 +27,7 @@ public class SettingsForm implements Configurable {
     private JButton resetPath;
     private JCheckBox annotateMissing;
     private JCheckBox annotateUnused;
+    private JCheckBox useLegacyNamespaces;
 
     public SettingsForm(@NotNull final Project project) {
         this.project = project;
@@ -57,7 +58,8 @@ public class SettingsForm implements Configurable {
         Settings settings = getSettings();
         return !Objects.equals(settings.ouzoProjectRoot, ouzoProjectRoot.getText()) ||
                 settings.annotateMissingTranslation != annotateMissing.isSelected() ||
-                settings.annotateUnusedTranslation != annotateUnused.isSelected()
+                settings.annotateUnusedTranslation != annotateUnused.isSelected() ||
+                settings.useLegacyNamespaces != useLegacyNamespaces.isSelected()
                 ;
     }
 
@@ -67,6 +69,7 @@ public class SettingsForm implements Configurable {
         settings.ouzoProjectRoot = ouzoProjectRoot.getText();
         settings.annotateMissingTranslation = annotateMissing.isSelected();
         settings.annotateUnusedTranslation = annotateUnused.isSelected();
+        settings.useLegacyNamespaces = useLegacyNamespaces.isSelected();
     }
 
     @Override
@@ -75,6 +78,7 @@ public class SettingsForm implements Configurable {
         ouzoProjectRoot.setText(settings.ouzoProjectRoot);
         annotateMissing.setSelected(settings.annotateMissingTranslation);
         annotateUnused.setSelected(settings.annotateUnusedTranslation);
+        useLegacyNamespaces.setSelected(settings.useLegacyNamespaces);
     }
 
     @Override

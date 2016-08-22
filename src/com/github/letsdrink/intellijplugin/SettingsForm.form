@@ -6,6 +6,8 @@
     <rowspec value="center:max(d;4px):noGrow"/>
     <rowspec value="top:4dlu:noGrow"/>
     <rowspec value="center:max(d;4px):noGrow"/>
+    <rowspec value="top:4dlu:noGrow"/>
+    <rowspec value="center:max(d;4px):noGrow"/>
     <colspec value="fill:max(d;4px):noGrow"/>
     <colspec value="left:4dlu:noGrow"/>
     <colspec value="fill:d:grow"/>
@@ -60,6 +62,15 @@
         </constraints>
         <properties>
           <text value="Annotate unused tranlations"/>
+        </properties>
+      </component>
+      <component id="eff7c" class="javax.swing.JCheckBox" binding="useLegacyNamespaces">
+        <constraints>
+          <grid row="6" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <forms/>
+        </constraints>
+        <properties>
+          <text value="Use legacy namespaces"/>
         </properties>
       </component>
     </children>

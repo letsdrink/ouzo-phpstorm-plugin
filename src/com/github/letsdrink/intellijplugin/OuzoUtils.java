@@ -38,13 +38,16 @@ public class OuzoUtils {
     public static boolean isInViewDir(PsiFile file) {
         VirtualFile ouzoProjectRoot = Settings.getInstance(file.getProject()).getOuzoProjectRoot();
         String relativePath = VfsUtil.getRelativePath(file.getVirtualFile(), ouzoProjectRoot, '/');
-        return relativePath != null && (relativePath.startsWith("application/view") || relativePath.startsWith("Application/View") );
+        return relativePath != null && (relativePath.startsWith("application/view") || relativePath.startsWith("Application/View"));
     }
 
     public static PsiFile getViewPsiFile(Project project, String viewName) {
         VirtualFile virtualFile = Settings.getInstance(project).getOuzoProjectRoot().findFileByRelativePath("/application/view/" + viewName + ".phtml");
         if (virtualFile == null) {
             virtualFile = Settings.getInstance(project).getOuzoProjectRoot().findFileByRelativePath("/Application/View/" + viewName + ".phtml");
+        }
+        if (virtualFile == null) {
+            virtualFile = Settings.getInstance(project).getOuzoProjectRoot().findFileByRelativePath("/application/view/" + viewName + ".html.twig");
         }
         if (virtualFile == null) {
             return null;
@@ -97,8 +100,9 @@ public class OuzoUtils {
     }
 
     public static PsiElement getControllerAction(Project project, String controller, String action) {
+        String controllerFQN = Settings.getInstance(project).useLegacyNamespaces ? "Controller\\" + controller : "Application\\Controller\\" + controller;
         PhpIndex phpIndex = PhpIndex.getInstance(project);
-        Collection<PhpClass> phpClasses = phpIndex.getClassesByFQN(controller);
+        Collection<PhpClass> phpClasses = phpIndex.getClassesByFQN(controllerFQN);
 
         PhpClass phpClass = Iterables.getLast(phpClasses, null);
         if (phpClass == null) {

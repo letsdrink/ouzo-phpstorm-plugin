@@ -17,6 +17,7 @@ public class Settings implements PersistentStateComponent<Settings> {
     public String ouzoProjectRoot;
     public boolean annotateUnusedTranslation = true;
     public boolean annotateMissingTranslation = true;
+    public boolean useLegacyNamespaces = false;
     private Project project;
 
     @Override

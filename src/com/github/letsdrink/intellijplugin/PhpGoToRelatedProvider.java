@@ -42,7 +42,7 @@ public class PhpGoToRelatedProvider extends GotoRelatedProvider {
     private PsiElement getControllerOrActionElement(PsiFile psiFile) {
         String resourceName = psiFile.getParent().getName();
 
-        String controller = "Controller\\" + resourceName + "Controller";
+        String controller = resourceName + "Controller";
         String action = psiFile.getName().replaceAll("\\.phtml", "");
         return OuzoUtils.getControllerAction(psiFile.getProject(), controller, action);
     }

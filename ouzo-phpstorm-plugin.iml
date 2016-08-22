@@ -7,12 +7,14 @@
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/test" isTestSource="true" />
     </content>
-    <orderEntry type="jdk" jdkName="IDEA PS-138.2071" jdkType="IDEA JDK" />
+    <orderEntry type="jdk" jdkName="PhpStorm PS-162.1628.23" jdkType="IDEA JDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" scope="PROVIDED" name="php-openapi" level="project" />
-    <orderEntry type="library" name="javascript-openapi" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="php" level="project" />
     <orderEntry type="library" scope="TEST" name="junit-4.8.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="mockito-all-1.9.5" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="php-openapi1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="javascript-openapi1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="twig1" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="php" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="2.0" level="project" />
   </component>
 </module>
-
